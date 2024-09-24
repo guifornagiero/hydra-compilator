@@ -1,0 +1,17 @@
+{
+  "name": "hydra-compilator",
+  "version": "1.0.0",
+  "description": "Compilador para a linguagem de programação Hydra, criada para a matéria de Compiladores da FEI",
+  "main": "index.js",
+  "scripts": {
+    "compile": "ts-node src/Compiler.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^22.6.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
