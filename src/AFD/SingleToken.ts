@@ -32,6 +32,18 @@ export default class SingleToken implements AFD {
             case ">":
                 code.shift();
                 return new Token("GREATER_THEN", ">");
+            case "=":
+                code.shift();
+                return new Token("EQUAL", "=");
+            case "{":
+                code.shift();
+                return new Token("OPEN_BRACKET", "{");
+            case "}":
+                code.shift();
+                return new Token("CLOSE_BRACKET", "}");
+            case "|":
+                code.shift();
+                return new Token("PIPE", "|");
             default:
                 return null;
         }

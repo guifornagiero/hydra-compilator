@@ -1,4 +1,5 @@
 import { AFD } from "../AFD/AFD";
+import ComplexToken from "../AFD/ComplexToken";
 import Identifier from "../AFD/Identifier";
 import LiteralNumber from "../AFD/LiteralNumber";
 import SingleToken from "../AFD/SingleToken";
@@ -14,7 +15,7 @@ export default class Lexer {
         this.afds = [];
         this.code = code.split("");
 
-        this.afds.push(new SingleToken(), new LiteralNumber(), new Identifier());
+        this.afds.push(new ComplexToken(), new SingleToken(), new LiteralNumber(), new Identifier());
     }
 
     private skipWhiteSpace(): void {

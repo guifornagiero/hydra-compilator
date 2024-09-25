@@ -14,6 +14,9 @@ export default class Identifier implements AFD {
             dec: "DECIMAL",
             true: "TRUE",
             false: "FALSE",
+            from: "FROM",
+            to: "TO",
+            up: "UP"
         }
     }
 
