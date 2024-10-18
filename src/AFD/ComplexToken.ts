@@ -69,13 +69,51 @@ export default class ComplexToken implements AFD {
             if (code[1] == "-") {
                 code.shift();
                 code.shift();
-                return new Token("COMMENT", "--");
+
+                let word = "";
+                while (code[0] != "-") {
+                    word += code[0];
+                    code.shift();
+                }
+                code.shift();
+                code.shift();
+
+                return new Token("COMMENT", "--" + word + "--");
             }
 
             if (code[1] == ">") {
                 code.shift();
                 code.shift();
                 return new Token("ATTRIBUTION_ARROW", "->");
+            }
+        }
+
+        if (code[0] == "\"") {
+            code.shift();
+
+            let word = "";
+            while (code[0] != "\"") {
+                word += code[0];
+                code.shift();
+            }
+            code.shift();
+
+            return new Token("LITERAL_STRING", "\"" + word + "\"");
+        }
+
+        if (code[0] == "<") {
+            if (code[1] == "=") {
+                code.shift();
+                code.shift();
+                return new Token("LESS_EQUAL", "<=");
+            }
+        }
+
+        if (code[0] == ">") {
+            if (code[1] == "=") {
+                code.shift();
+                code.shift();
+                return new Token("GREATER_EQUAL", "<=");
             }
         }
 

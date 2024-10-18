@@ -43,7 +43,10 @@ export default class SingleToken implements AFD {
                 return new Token("CLOSE_BRACKET", "}");
             case "|":
                 code.shift();
-                return new Token("PIPE", "|");
+                return new Token("OR", "|");
+            case "&":
+                code.shift();
+                return new Token("AND", "&");
             default:
                 return null;
         }
