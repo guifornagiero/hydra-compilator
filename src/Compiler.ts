@@ -1,9 +1,11 @@
 import Lexer from "./Analysers/Lexer";
-import { Parser } from "./Analysers/Parser";
+import Parser from "./Analysers/Parser";
 
 const code = `
     begin;
-    sadsasd
+    var <bool> active -> false;
+    var <int> num123 -> 10 * 100 + (10 - 2);
+    var <string> name -> "Hello, World!";
     end;
 `;
 const lexer = new Lexer(code);

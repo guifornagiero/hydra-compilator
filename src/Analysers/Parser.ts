@@ -1,6 +1,6 @@
 import { Token } from "../Models/Token";
 
-export class Parser {
+export default class Parser {
     private tokens: Token[];
     private token: Token | null;
 
@@ -8,20 +8,7 @@ export class Parser {
         this.tokens = tokens;
         this.token = this.getNextToken();
     }
-
-    public getNextToken(): Token | null {
-        if (!!this.token) console.log(this.token);
-        if (this.tokens.length > 0) return this.tokens.shift() || null;
-        return null;
-    }
-
-    public erro(regra: string): void {
-        console.error("Erro na compilação!");
-        throw new Error(
-            `Erro na regra ${regra} - Token atual: ${this.token?.lexema}`
-        );
-    }
-
+    
     public parse(): void {
         if (this.PROGRAMA()) {
             console.log("Código válido!");
@@ -30,7 +17,19 @@ export class Parser {
         }
     }
 
-    public PROGRAMA(): boolean {
+    private getNextToken(): Token | null {
+        // if (!!this.token) console.log(this.token);
+        if (this.tokens.length > 0) return this.tokens.shift() || null;
+        return null;
+    }
+
+    private erro(regra: string): void {
+        console.error("Erro na compilação!");
+        throw new Error(`Erro na regra ${regra} - Token atual: ${this.token?.lexema}`);
+    }
+
+    //#region Regras
+    private PROGRAMA(): boolean {
         if (this.begin() && this.BLOCO() && this.end()) {
             if (this.token?.tipo === "EOF") {
                 return true;
@@ -98,10 +97,33 @@ export class Parser {
         this.erro("DECLARACAO");
         return false;
     }
+    
+        private TIPO(): boolean {
+            if (
+                this.token?.tipo === "INTEGER" ||
+                this.token?.tipo === "STRING" ||
+                this.token?.tipo === "DECIMAL" ||
+                this.token?.tipo === "BOOLEAN"
+            ) {
+                this.token = this.getNextToken();
+                return true;
+            }
+    
+            this.erro("TIPO");
+            return false;
+        }
 
     private EXPRESSION(): boolean {
-        if (this.token?.tipo === "NUM") {
+        if (this.token?.tipo === "LITERAL_STRING") {
             this.token = this.getNextToken();
+            return true;
+        } else if (
+            this.token?.tipo === "TRUE" ||
+            this.token?.tipo === "FALSE"
+        ) {
+            this.token = this.getNextToken();
+            return true;
+        } else if (this.E()) {
             return true;
         }
 
@@ -109,22 +131,86 @@ export class Parser {
         return false;
     }
 
-    private TIPO(): boolean {
-        if (
-            this.token?.tipo === "INTEGER" ||
-            this.token?.tipo === "STRING" ||
-            this.token?.tipo === "DECIMAL" ||
-            this.token?.tipo === "TRUE" ||
-            this.token?.tipo === "FALSE"
-        ) {
-            this.token = this.getNextToken();
+    private E(): boolean {
+        if (this.T() && this.E_()) {
             return true;
         }
 
-        this.erro("TIPO");
+        this.erro("E");
         return false;
     }
 
+    private E_(): boolean {
+        if (this.token?.lexema === "+") {
+            this.token = this.getNextToken();
+            if (this.T() && this.E_()) {
+                return true;
+            }
+        } else if (this.token?.lexema === "-") {
+            this.token = this.getNextToken();
+            if (this.T() && this.E_()) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+        this.erro("E_");
+        return false;
+    }
+
+    private T(): boolean {
+        if (this.F() && this.T_()) {
+            return true;
+        }
+
+        this.erro("T");
+        return false;
+    }
+
+    private T_(): boolean {
+        if (this.token?.lexema === "*") {
+            this.token = this.getNextToken();
+            if (this.F() && this.T_()) {
+                return true;
+            }
+        } else if (this.token?.lexema === "/") {
+            this.token = this.getNextToken();
+            if (this.F() && this.T_()) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+        this.erro("T_");
+        return false;
+    }
+
+    private F(): boolean {
+        if (this.token?.tipo === "ID") {
+            this.token = this.getNextToken();
+            return true;
+        } else if (this.token?.tipo === "DEC") {
+            this.token = this.getNextToken();
+            return true;
+        } else if (this.token?.tipo === "NUM") {
+            this.token = this.getNextToken();
+            return true;
+        } else if (this.token?.lexema === "(") {
+            this.token = this.getNextToken();
+            if (this.E() && this.token?.lexema === ")") {
+                this.token = this.getNextToken();
+                return true;
+            }
+        }
+
+        this.erro("F");
+        return false;
+    }
+    //#endregion
+
+    //#region Terminais
     private var(): boolean {
         if (this.token?.lexema === "var") {
             this.token = this.getNextToken();
@@ -161,7 +247,7 @@ export class Parser {
             return true;
         }
 
-        this.erro("ID");
+        this.erro("id");
         return false;
     }
 
@@ -210,4 +296,5 @@ export class Parser {
         this.erro("end");
         return false;
     }
+    //#endregion
 }
