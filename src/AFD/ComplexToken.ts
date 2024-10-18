@@ -84,7 +84,7 @@ export default class ComplexToken implements AFD {
             if (code[1] == ">") {
                 code.shift();
                 code.shift();
-                return new Token("ATTRIBUTION_ARROW", "->");
+                return new Token("DECLARATION_ARROW", "->");
             }
         }
 

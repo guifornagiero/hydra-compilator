@@ -1,7 +1,15 @@
 import Lexer from "./Analysers/Lexer";
+import { Parser } from "./Analysers/Parser";
 
-const code = "@f (var <int> ix -> 0 | from ix to nx | up ix) >-> { }";
+const code = `
+    begin;
+    sadsasd
+    end;
+`;
 const lexer = new Lexer(code);
 
 const tokens = lexer.getTokens();
-console.log(tokens);
+// console.log(tokens);
+
+const parser = new Parser(tokens);
+parser.parse();
