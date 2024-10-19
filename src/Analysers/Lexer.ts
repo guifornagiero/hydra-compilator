@@ -37,7 +37,6 @@ export default class Lexer {
             for (let afd of this.afds) {
                 const reservCode = [...this.code];
                 const token = afd.evaluate(this.code);
-                console.log(token);
 
                 if (!!token) {
                     accepted = true;
