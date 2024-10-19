@@ -2,10 +2,10 @@ import { Token } from "../Models/Token";
 import { AFD } from "./AFD";
 
 export default class DecimalNumber implements AFD {
-
+    
     evaluate(code: string[]): Token | null {
         if (this.isDigit(code[0])) {
-            const number = this.readDecimal(code); 
+            const number = this.readDecimal(code);
             if (number && this.isEnd(code)) {
                 return new Token("DEC", number);
             }
@@ -21,16 +21,13 @@ export default class DecimalNumber implements AFD {
     private readDecimal(code: string[]): string | null {
         let number = "";
 
-        
         while (this.isDigit(code[0])) {
             number += code.shift();
         }
 
-        
         if (code[0] === ".") {
-            number += code.shift(); 
+            number += code.shift();
 
-           
             if (this.isDigit(code[0])) {
                 while (this.isDigit(code[0])) {
                     number += code.shift();
@@ -39,7 +36,6 @@ export default class DecimalNumber implements AFD {
             }
         }
 
-       
         return null;
     }
 
