@@ -3,7 +3,7 @@ import Parser from "./Analysers/Parser";
 
 const code = `
     begin;
-    var <bool> active -> false;
+    var <dec> pi -> 3.14;
     var <int> num123 -> 10 * 100 + (10 - 2);
     var <string> name -> "Hello, World!";
     end;
@@ -11,7 +11,7 @@ const code = `
 const lexer = new Lexer(code);
 
 const tokens = lexer.getTokens();
-// console.log(tokens);
+console.log(tokens);
 
 const parser = new Parser(tokens);
 parser.parse();
