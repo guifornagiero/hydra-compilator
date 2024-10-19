@@ -69,7 +69,21 @@ export default class Parser {
     }
 
     private IF(): boolean {
+        if (
+            this.if() &&
+            this.openPar() &&
+            this.CONDICAO() &&
+            this.closePar() &&
+            this.scopeArrow() &&
+            this.openBracket() &&
+            this.BLOCO() &&
+            this.closeBracket() &&
+            this.X()
+        ) {
         return true;
+        }
+        this.erro("IF");
+        return false;
     }
 
     private FOR(): boolean {
@@ -208,6 +222,8 @@ export default class Parser {
         this.erro("F");
         return false;
     }
+
+    
     //#endregion
 
     //#region Terminais
@@ -268,6 +284,60 @@ export default class Parser {
         }
 
         this.erro(";");
+        return false;
+    }
+
+    private openPar(): boolean {
+        if(this.token?.lexema === "("){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("(");
+        return false;
+    }
+
+    private closePar(): boolean {
+        if(this.token?.lexema === ")"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro(")");
+        return false;
+    }
+
+    private scopeArrow(): boolean {
+        if(this.token?.lexema === ">->"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro(">->");
+        return false;
+    }
+
+    private openBracket(): boolean {
+        if(this.token?.lexema === "{"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("{");
+        return false;
+    }
+
+    private closeBracket(): boolean {
+        if(this.token?.lexema === "}"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("}");
+        return false;
+    }
+
+    private if(): boolean {
+        if(this.token?.tipo === "IF"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("if");
         return false;
     }
 
