@@ -1,5 +1,6 @@
 import { AFD } from "../AFD/AFD";
 import ComplexToken from "../AFD/ComplexToken";
+import DecimalNumber from "../AFD/DecimalNumber";
 import Identifier from "../AFD/Identifier";
 import LiteralNumber from "../AFD/LiteralNumber";
 import SingleToken from "../AFD/SingleToken";
@@ -15,7 +16,7 @@ export default class Lexer {
         this.afds = [];
         this.code = code.split("");
 
-        this.afds.push(new ComplexToken(), new SingleToken(), new LiteralNumber(), new Identifier());
+        this.afds.push(new ComplexToken(),new DecimalNumber(), new SingleToken(), new LiteralNumber(), new Identifier());
     }
 
     private skipWhiteSpace(): void {
@@ -36,6 +37,7 @@ export default class Lexer {
             for (let afd of this.afds) {
                 const reservCode = [...this.code];
                 const token = afd.evaluate(this.code);
+                console.log(token);
 
                 if (!!token) {
                     accepted = true;
