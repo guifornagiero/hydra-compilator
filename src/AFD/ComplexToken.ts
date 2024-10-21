@@ -109,6 +109,14 @@ export default class ComplexToken implements AFD {
             }
         }
 
+        if (code[0] == "=") {
+            if (code[1] == "=") {
+                code.shift();
+                code.shift();
+                return new Token("DOUBLE_EQUAL", "==");
+            }
+        }
+
         if (code[0] == ">") {
             if (code[1] == "=") {
                 code.shift();

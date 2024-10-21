@@ -4,6 +4,11 @@ import Parser from "./Analysers/Parser";
 const code = `
     begin;
     var <bool> isTrue -> true;
+
+    @i (isTrue == isTrue) >-> {
+
+    };
+    
     end;
 `;
 const lexer = new Lexer(code);

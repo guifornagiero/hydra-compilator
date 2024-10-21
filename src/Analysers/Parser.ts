@@ -77,8 +77,8 @@ export default class Parser {
             this.scopeArrow() &&
             this.openBracket() &&
             this.BLOCO() &&
-            this.closeBracket() &&
-            this.X()
+            this.closeBracket() 
+            //this.X()
         ) {
         return true;
         }
@@ -91,7 +91,86 @@ export default class Parser {
     }
 
     private WHILE(): boolean {
+        if(
+            this.while() && 
+            this.openPar() && 
+            this.CONDICAO() && 
+            this.closePar() && 
+            this.scopeArrow() && 
+            this.openBracket() && 
+            this.BLOCO() && 
+            this.closeBracket() 
+            //this.X()
+        ){
         return true;
+        }
+        this.erro("WHILE");
+        return false;
+    }
+
+    private CONDICAO(): boolean {
+        if
+        (
+            this.id() &&
+            this.operadorRelacional() &&
+            this.id()
+
+        ) {
+            return true;
+        }
+        this.erro("CONDICAO");
+        return false;
+    }
+
+    private operadorRelacional(): boolean {
+        if (
+            this.token?.lexema === ">" ||
+            this.token?.lexema === "<" ||
+            this.token?.lexema === ">=" ||
+            this.token?.lexema === "<=" ||
+            this.token?.lexema === "=="
+        ) {
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("OPERADOR RELACIONAL");
+        return false;
+    }
+
+    private doubleEqual(): boolean {
+        if (this.token?.tipo === "DOUBLE_EQUAL") {
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("double equal");
+        return false;
+    }
+
+    private lessEqual(): boolean {
+        if (this.token?.tipo === "LESS_EQUAL") {
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("less equal");
+        return false;
+    }
+
+    private greaterEqual(): boolean {
+        if (this.token?.tipo === "GREATER_EQUAL") {
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("greater equal");
+        return false;
+    }
+
+    private while(): boolean {
+        if(this.token?.tipo === "WHILE"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("if");
+        return false;
     }
 
     private DECLARACAO(): boolean {
