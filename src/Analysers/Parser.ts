@@ -138,17 +138,21 @@ export default class Parser {
 
     private FOR_CONDICAO(): boolean {
         if
-        (
-            this.id() &&
+        (   
+            this.var() &&
+            this.lessThen() &&
+            this.TIPO() &&
+            this.greaterThen() &&
             this.declarationArrow() &&
             this.id() &&
             this.semi() &&
+            this.from() &&
             this.id() &&
-            this.operadorRelacional() &&
+            this.to() &&
             this.id() &&
             this.semi() &&
-            this.id() &&
-            this.up()
+            this.up() &&
+            this.id()
         ) {
             return true;
         }
@@ -469,6 +473,24 @@ export default class Parser {
             return true;
         }
         this.erro("up");
+        return false;
+    }
+
+    private from(): boolean {
+        if (this.token?.tipo === "FROM"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("from");
+        return false;
+    }
+
+    private to(): boolean {
+        if (this.token?.tipo === "TO"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("to");
         return false;
     }
 
