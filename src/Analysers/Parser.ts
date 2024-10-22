@@ -87,7 +87,21 @@ export default class Parser {
     }
 
     private FOR(): boolean {
+        if(
+            this.for() && 
+            this.openPar() && 
+            this.FOR_CONDICAO() && 
+            this.closePar() && 
+            this.scopeArrow() && 
+            this.openBracket() && 
+            this.BLOCO() && 
+            this.closeBracket() 
+            //this.X()
+        ){
         return true;
+        }
+        this.erro("WHILE");
+        return false;
     }
 
     private WHILE(): boolean {
@@ -122,6 +136,26 @@ export default class Parser {
         return false;
     }
 
+    private FOR_CONDICAO(): boolean {
+        if
+        (
+            this.id() &&
+            this.declarationArrow() &&
+            this.id() &&
+            this.semi() &&
+            this.id() &&
+            this.operadorRelacional() &&
+            this.id() &&
+            this.semi() &&
+            this.id() &&
+            this.up()
+        ) {
+            return true;
+        }
+        this.erro("FOR_CONDICAO");
+        return false;
+    }
+
     private operadorRelacional(): boolean {
         if (
             this.token?.lexema === ">" ||
@@ -142,7 +176,7 @@ export default class Parser {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("double equal");
+        this.erro("Double equal");
         return false;
     }
 
@@ -151,7 +185,7 @@ export default class Parser {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("less equal");
+        this.erro("Less equal");
         return false;
     }
 
@@ -160,7 +194,7 @@ export default class Parser {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("greater equal");
+        this.erro("Greater equal");
         return false;
     }
 
@@ -169,7 +203,7 @@ export default class Parser {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("if");
+        this.erro("While");
         return false;
     }
 
@@ -417,6 +451,24 @@ export default class Parser {
             return true;
         }
         this.erro("if");
+        return false;
+    }
+
+    private for(): boolean {
+        if(this.token?.tipo === "FOR"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("for");
+        return false;
+    }
+
+    private up(): boolean {
+        if (this.token?.tipo === "UP"){
+            this.token = this.getNextToken();
+            return true;
+        }
+        this.erro("up");
         return false;
     }
 
