@@ -18,20 +18,20 @@ export default class ComplexToken implements AFD {
                 return new Token("READ_FUNCTION", "@r");
             }
 
-            if (code[1] == "i" && code[2] != "e") {
+            if (code[1] == "i") {
                 code.shift();
                 code.shift();
                 return new Token("IF", "@i");
             }
 
-            if (code[1] == "i" && code[2] == "e") {
+            if (code[1] == "e" && code[2] == "i") {
                 code.shift();
                 code.shift();
                 code.shift();
-                return new Token("ELSE_IF", "@ie");
+                return new Token("ELSE_IF", "@ei");
             }
 
-            if (code[1] == "e") {
+            if (code[1] == "e" && code[2] != "i") {
                 code.shift();
                 code.shift();
                 return new Token("ELSE", "@e");

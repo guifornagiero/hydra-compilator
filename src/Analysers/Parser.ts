@@ -74,13 +74,83 @@ export default class Parser {
             this.scopeArrow() &&
             this.openBracket() &&
             this.BLOCO() &&
-            this.closeBracket()
-            //this.X()
+            this.closeBracket() &&
+            this.X()
         ) {
             return true;
         }
 
         this.erro("IF");
+        return false;
+    }
+
+    private X(): boolean {
+        if (this.token?.lexema === "@ei") {
+            if (this.ELSE_IF() && this.X()) {
+                return true;
+            }
+        } else if (this.token?.lexema === "@e") {
+            if (this.ELSE()) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+        this.erro("X");
+        return false;
+    }
+
+    private ELSE_IF(): boolean {
+        if (
+            this.elseif() &&
+            this.openPar() &&
+            this.CONDICAO() &&
+            this.closePar() &&
+            this.scopeArrow() &&
+            this.openBracket() &&
+            this.BLOCO() &&
+            this.closeBracket()
+        ) {
+            return true;
+        }
+
+        this.erro("ELSE_IF");
+        return false;
+    }
+
+    private elseif(): boolean {
+        if (this.token?.lexema === "@ei") {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        this.erro("elseif");
+        return false;
+    }
+
+    private else(): boolean {
+        if (this.token?.lexema === "@e") {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        this.erro("elseif");
+        return false;
+    }
+
+    private ELSE(): boolean {
+        if (
+            this.else() &&
+            this.scopeArrow() &&
+            this.openBracket() &&
+            this.BLOCO() &&
+            this.closeBracket()
+        ) {
+            return true;
+        }
+
+        this.erro("ELSE_IF");
         return false;
     }
 
