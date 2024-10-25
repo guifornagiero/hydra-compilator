@@ -43,17 +43,14 @@ export default class Parser {
     private BLOCO(): boolean {
         if (this.token?.tipo === "IF") {
             if (this.IF() && this.BLOCO()) {
-                this.token = this.getNextToken();
                 return true;
             }
         } else if (this.token?.tipo === "FOR") {
             if (this.FOR() && this.BLOCO()) {
-                this.token = this.getNextToken();
                 return true;
             }
         } else if (this.token?.tipo === "WHILE") {
             if (this.WHILE() && this.BLOCO()) {
-                this.token = this.getNextToken();
                 return true;
             }
         } else if (this.token?.tipo === "VAR") {
@@ -77,86 +74,95 @@ export default class Parser {
             this.scopeArrow() &&
             this.openBracket() &&
             this.BLOCO() &&
-            this.closeBracket() 
+            this.closeBracket()
             //this.X()
         ) {
-        return true;
+            return true;
         }
+
         this.erro("IF");
         return false;
     }
 
     private FOR(): boolean {
-        if(
-            this.for() && 
-            this.openPar() && 
-            this.FOR_CONDICAO() && 
-            this.closePar() && 
-            this.scopeArrow() && 
-            this.openBracket() && 
-            this.BLOCO() && 
-            this.closeBracket() 
+        if (
+            this.for() &&
+            this.openPar() &&
+            this.FOR_CONDICAO() &&
+            this.closePar() &&
+            this.scopeArrow() &&
+            this.openBracket() &&
+            this.BLOCO() &&
+            this.closeBracket()
             //this.X()
-        ){
-        return true;
+        ) {
+            return true;
         }
+
         this.erro("WHILE");
         return false;
     }
 
     private WHILE(): boolean {
-        if(
-            this.while() && 
-            this.openPar() && 
-            this.CONDICAO() && 
-            this.closePar() && 
-            this.scopeArrow() && 
-            this.openBracket() && 
-            this.BLOCO() && 
-            this.closeBracket() 
+        if (
+            this.while() &&
+            this.openPar() &&
+            this.CONDICAO() &&
+            this.closePar() &&
+            this.scopeArrow() &&
+            this.openBracket() &&
+            this.BLOCO() &&
+            this.closeBracket()
             //this.X()
-        ){
-        return true;
+        ) {
+            return true;
         }
+
         this.erro("WHILE");
         return false;
     }
 
     private CONDICAO(): boolean {
-        if
-        (
-            this.id() &&
-            this.operadorRelacional() &&
-            this.id()
-
-        ) {
+        if (this.E() && this.operadorRelacional() && this.E()) {
             return true;
         }
+
         this.erro("CONDICAO");
         return false;
     }
 
     private FOR_CONDICAO(): boolean {
-        if
-        (   
+        if (
             this.var() &&
             this.lessThen() &&
             this.TIPO() &&
             this.greaterThen() &&
-            this.declarationArrow() &&
             this.id() &&
-            this.semi() &&
+            this.declarationArrow() &&
+            this.E() &&
+            this.or() &&
             this.from() &&
             this.id() &&
             this.to() &&
-            this.id() &&
-            this.semi() &&
+            this.E() &&
+            this.or() &&
             this.up() &&
             this.id()
         ) {
             return true;
         }
+
         this.erro("FOR_CONDICAO");
+        return false;
+    }
+
+    private or(): boolean {
+        if (this.token?.tipo === "OR") {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        this.erro("or");
         return false;
     }
 
@@ -166,11 +172,12 @@ export default class Parser {
             this.token?.lexema === "<" ||
             this.token?.lexema === ">=" ||
             this.token?.lexema === "<=" ||
-            this.token?.lexema === "=="
+            this.token?.lexema === "="
         ) {
             this.token = this.getNextToken();
             return true;
         }
+
         this.erro("OPERADOR RELACIONAL");
         return false;
     }
@@ -180,6 +187,7 @@ export default class Parser {
             this.token = this.getNextToken();
             return true;
         }
+
         this.erro("Double equal");
         return false;
     }
@@ -189,6 +197,7 @@ export default class Parser {
             this.token = this.getNextToken();
             return true;
         }
+
         this.erro("Less equal");
         return false;
     }

@@ -3,12 +3,14 @@ import Parser from "./Analysers/Parser";
 
 const code = `
     begin;
-    var <bool> isTrue -> true;
+    @i (xx = 10) >-> {
+        var <bool> is -> true;
+        @f (var <int> ix -> 0 | from ix to 10 | up ix) >-> { }
+    }
 
-    @i (isTrue == isTrue) >-> {
-
-    };
-    
+    @w (10 + 20 = 30 - 2) >-> {
+        var <string> xx -> "gui";
+    }
     end;
 `;
 const lexer = new Lexer(code);
