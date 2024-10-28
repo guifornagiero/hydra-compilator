@@ -5,6 +5,7 @@ const code = `
     begin;
     -- teste jwehduw --
     -- 19019013 + 173813 / 78223 ? --
+    -- teste commit --
     end;
 `;
 const lexer = new Lexer(code);
