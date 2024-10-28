@@ -8,7 +8,7 @@ export default class Parser {
         this.tokens = tokens;
         this.token = this.getNextToken();
     }
-    
+
     public parse(): void {
         if (this.PROGRAMA()) {
             console.log("Código válido!");
@@ -57,11 +57,59 @@ export default class Parser {
             if (this.DECLARACAO() && this.BLOCO()) {
                 return true;
             }
+        } else if (this.token?.tipo === "PRINT_FUNCTION") {
+            if (this.PRINT() && this.BLOCO()) {
+                return true;
+            }
         } else {
             return true;
         }
 
         this.erro("BLOCO");
+        return false;
+    }
+
+    private PRINT(): boolean {
+        if (
+            this.print() &&
+            this.openPar() &&
+            this.P() &&
+            this.closePar() &&
+            this.semi()
+        ) {
+            return true;
+        }
+
+        this.erro("PRINT");
+        return false;
+    }
+
+    private P(): boolean {
+        if (this.string() || this.E()) {
+            return true;
+        }
+
+        this.erro("P");
+        return false;
+    }
+
+    private string(): boolean {
+        if (this.token?.tipo === "LITERAL_STRING") {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        // this.erro("string");
+        return false;
+    }
+
+    private print(): boolean {
+        if (this.token?.lexema === "@p") {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        // this.erro("print");
         return false;
     }
 
@@ -125,7 +173,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro("elseif");
+        // this.erro("elseif");
         return false;
     }
 
@@ -135,7 +183,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro("elseif");
+        // this.erro("else");
         return false;
     }
 
@@ -164,7 +212,6 @@ export default class Parser {
             this.openBracket() &&
             this.BLOCO() &&
             this.closeBracket()
-            //this.X()
         ) {
             return true;
         }
@@ -183,7 +230,6 @@ export default class Parser {
             this.openBracket() &&
             this.BLOCO() &&
             this.closeBracket()
-            //this.X()
         ) {
             return true;
         }
@@ -232,7 +278,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro("or");
+        // this.erro("or");
         return false;
     }
 
@@ -248,45 +294,16 @@ export default class Parser {
             return true;
         }
 
-        this.erro("OPERADOR RELACIONAL");
-        return false;
-    }
-
-    private doubleEqual(): boolean {
-        if (this.token?.tipo === "DOUBLE_EQUAL") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        this.erro("Double equal");
-        return false;
-    }
-
-    private lessEqual(): boolean {
-        if (this.token?.tipo === "LESS_EQUAL") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        this.erro("Less equal");
-        return false;
-    }
-
-    private greaterEqual(): boolean {
-        if (this.token?.tipo === "GREATER_EQUAL") {
-            this.token = this.getNextToken();
-            return true;
-        }
-        this.erro("Greater equal");
+        // this.erro("operadorRelacional");
         return false;
     }
 
     private while(): boolean {
-        if(this.token?.tipo === "WHILE"){
+        if (this.token?.tipo === "WHILE") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("While");
+        // this.erro("while");
         return false;
     }
 
@@ -307,21 +324,21 @@ export default class Parser {
         this.erro("DECLARACAO");
         return false;
     }
-    
-        private TIPO(): boolean {
-            if (
-                this.token?.tipo === "INTEGER" ||
-                this.token?.tipo === "STRING" ||
-                this.token?.tipo === "DECIMAL" ||
-                this.token?.tipo === "BOOLEAN"
-            ) {
-                this.token = this.getNextToken();
-                return true;
-            }
-    
-            this.erro("TIPO");
-            return false;
+
+    private TIPO(): boolean {
+        if (
+            this.token?.tipo === "INTEGER" ||
+            this.token?.tipo === "STRING" ||
+            this.token?.tipo === "DECIMAL" ||
+            this.token?.tipo === "BOOLEAN"
+        ) {
+            this.token = this.getNextToken();
+            return true;
         }
+
+        this.erro("TIPO");
+        return false;
+    }
 
     private EXPRESSION(): boolean {
         if (this.token?.tipo === "LITERAL_STRING") {
@@ -419,7 +436,6 @@ export default class Parser {
         return false;
     }
 
-    
     //#endregion
 
     //#region Terminais
@@ -429,7 +445,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro("var");
+        // this.erro("var");
         return false;
     }
 
@@ -439,7 +455,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro("<");
+        // this.erro("<");
         return false;
     }
 
@@ -449,7 +465,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro(">");
+        // this.erro(">");
         return false;
     }
 
@@ -459,7 +475,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro("id");
+        // this.erro("id");
         return false;
     }
 
@@ -469,7 +485,7 @@ export default class Parser {
             return true;
         }
 
-        this.erro("->");
+        // this.erro("->");
         return false;
     }
 
@@ -479,97 +495,97 @@ export default class Parser {
             return true;
         }
 
-        this.erro(";");
+        // this.erro(";");
         return false;
     }
 
     private openPar(): boolean {
-        if(this.token?.lexema === "("){
+        if (this.token?.lexema === "(") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("(");
+        // this.erro("(");
         return false;
     }
 
     private closePar(): boolean {
-        if(this.token?.lexema === ")"){
+        if (this.token?.lexema === ")") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro(")");
+        // this.erro(")");
         return false;
     }
 
     private scopeArrow(): boolean {
-        if(this.token?.lexema === ">->"){
+        if (this.token?.lexema === ">->") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro(">->");
+        // this.erro(">->");
         return false;
     }
 
     private openBracket(): boolean {
-        if(this.token?.lexema === "{"){
+        if (this.token?.lexema === "{") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("{");
+        // this.erro("{");
         return false;
     }
 
     private closeBracket(): boolean {
-        if(this.token?.lexema === "}"){
+        if (this.token?.lexema === "}") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("}");
+        // this.erro("}");
         return false;
     }
 
     private if(): boolean {
-        if(this.token?.tipo === "IF"){
+        if (this.token?.tipo === "IF") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("if");
+        // this.erro("if");
         return false;
     }
 
     private for(): boolean {
-        if(this.token?.tipo === "FOR"){
+        if (this.token?.tipo === "FOR") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("for");
+        // this.erro("for");
         return false;
     }
 
     private up(): boolean {
-        if (this.token?.tipo === "UP"){
+        if (this.token?.tipo === "UP") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("up");
+        // this.erro("up");
         return false;
     }
 
     private from(): boolean {
-        if (this.token?.tipo === "FROM"){
+        if (this.token?.tipo === "FROM") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("from");
+        // this.erro("from");
         return false;
     }
 
     private to(): boolean {
-        if (this.token?.tipo === "TO"){
+        if (this.token?.tipo === "TO") {
             this.token = this.getNextToken();
             return true;
         }
-        this.erro("to");
+        // this.erro("to");
         return false;
     }
 
@@ -582,7 +598,7 @@ export default class Parser {
             }
         }
 
-        this.erro("begin");
+        // this.erro("begin");
         return false;
     }
 
@@ -595,7 +611,7 @@ export default class Parser {
             }
         }
 
-        this.erro("end");
+        // this.erro("end");
         return false;
     }
     //#endregion

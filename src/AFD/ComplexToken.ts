@@ -121,7 +121,7 @@ export default class ComplexToken implements AFD {
             if (code[1] == "=") {
                 code.shift();
                 code.shift();
-                return new Token("GREATER_EQUAL", "<=");
+                return new Token("GREATER_EQUAL", ">=");
             }
         }
 

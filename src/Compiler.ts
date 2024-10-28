@@ -3,17 +3,9 @@ import Parser from "./Analysers/Parser";
 
 const code = `
     begin;
-    @i (xx = 10) >-> {
-        @f (var <int> dd -> 10 | from dd to 20 | up dd) >-> {
-            var <int> xx -> 30;
-        }
-    } @ei (xx = 20) >-> {
-        @w (dd = 20 + 10) >-> {
-            var <int> xx -> 30;
-        }
-    } @e >-> {
-        var <bool> is -> false;
-    }
+    @p(10 + 20 + 30);
+    @p("Hello, World!");
+    @p(variable + 10);
     end;
 `;
 const lexer = new Lexer(code);
