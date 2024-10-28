@@ -61,7 +61,12 @@ export default class Parser {
             if (this.PRINT() && this.BLOCO()) {
                 return true;
             }
-        } else {
+        } else if (this.token?.tipo === "COMMENT"){
+            if (this.COMENTARIO() && this.BLOCO()){
+                return true;
+            }
+        }
+        else {
             return true;
         }
 
@@ -90,6 +95,23 @@ export default class Parser {
         }
 
         this.erro("P");
+        return false;
+    }
+
+    private COMENTARIO(): boolean {
+        if (this.comment()) {
+            return true;
+        }
+
+        this.erro("COMENTARIO");
+        return false;
+    }
+
+    private comment(): boolean {
+        if (this.token?.tipo === "COMMENT"){
+            this.token = this.getNextToken();
+            return true;
+        }
         return false;
     }
 

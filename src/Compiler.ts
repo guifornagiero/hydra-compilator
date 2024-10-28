@@ -3,9 +3,8 @@ import Parser from "./Analysers/Parser";
 
 const code = `
     begin;
-    @p(10 + 20 + 30);
-    @p("Hello, World!");
-    @p(variable + 10);
+    -- teste jwehduw --
+    -- 19019013 + 173813 / 78223 ? --
     end;
 `;
 const lexer = new Lexer(code);
