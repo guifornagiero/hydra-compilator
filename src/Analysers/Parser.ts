@@ -74,6 +74,35 @@ export default class Parser {
         return false;
     }
 
+    private READ(): boolean {
+        if (
+            this.var() &&
+            this.lessThen() &&
+            this.string() &&
+            this.greaterThen() &&
+            this.id() &&
+            this.declarationArrow() &&
+            this.read() &&
+            this.openPar() &&
+            this.R() &&
+            this.closePar() &&
+            this.semi()
+        ) {
+            return true;
+        }
+
+        this.erro("READ");
+        return false;
+    }
+
+    private R(): boolean {
+        if (this.string()){
+            return true;
+        }
+
+        return false;
+    }
+
     private PRINT(): boolean {
         if (
             this.print() &&
@@ -127,6 +156,16 @@ export default class Parser {
 
     private print(): boolean {
         if (this.token?.lexema === "@p") {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        // this.erro("print");
+        return false;
+    }
+
+    private read(): boolean {
+        if (this.token?.lexema === "@r") {
             this.token = this.getNextToken();
             return true;
         }
