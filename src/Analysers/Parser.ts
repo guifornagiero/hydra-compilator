@@ -437,7 +437,9 @@ export default class Parser {
 
     //#region Terminais
     private trueOrFalse(node: TreeNode): boolean {
-        if (this.matchLexem("true", node) || this.matchType("false", node))
+        const trueOrFalse = node.addNodeByName("trueOrFalse");
+
+        if (this.matchLexem("true", trueOrFalse) || this.matchType("false", trueOrFalse))
             return true;
 
         this.erro("trueOrFalse");
@@ -453,12 +455,14 @@ export default class Parser {
     }
 
     private operadorRelacional(node: TreeNode): boolean {
+        const operadorRelacional = node.addNodeByName("operadorRelacional");
+
         if (
-            this.matchLexem(">=", node) ||
-            this.matchLexem("<=", node) ||
-            this.matchLexem("=", node) ||
-            this.matchLexem("<", node) ||
-            this.matchLexem(">", node)
+            this.matchLexem(">=", operadorRelacional) ||
+            this.matchLexem("<=", operadorRelacional) ||
+            this.matchLexem("=", operadorRelacional) ||
+            this.matchLexem("<", operadorRelacional) ||
+            this.matchLexem(">", operadorRelacional)
         )
             return true;
 
@@ -499,7 +503,9 @@ export default class Parser {
     }
 
     private string(node: TreeNode): boolean {
-        if (this.matchType("LITERAL_STRING", node))
+        const stringNode = node.addNodeByName("string");
+
+        if (this.matchType("LITERAL_STRING", stringNode))
             return true;
 
         this.erro("string");
@@ -523,7 +529,9 @@ export default class Parser {
     }
 
     private num(node: TreeNode): boolean {
-        if (this.matchType("NUM", node))
+        const num = node.addNodeByName("num");
+
+        if (this.matchType("NUM", num))
             return true;
 
         this.erro("num");
@@ -531,7 +539,9 @@ export default class Parser {
     }
 
     private dec(node: TreeNode): boolean {
-        if (this.matchType("DEC", node))
+        const dec = node.addNodeByName("dec");
+
+        if (this.matchType("DEC", dec))
             return true;
 
         this.erro("dec");
@@ -563,7 +573,9 @@ export default class Parser {
     }
 
     private id(node: TreeNode): boolean {
-        if (this.matchType("ID", node))
+        const id = node.addNodeByName("id");
+
+        if (this.matchType("ID", id))
             return true;
 
         this.erro("id");

@@ -4,7 +4,9 @@ import Parser from "./Analysers/Parser";
 const code = `
     begin;
     
-    @p("A");
+    -- comentario --
+
+    var <int> aa -> 10 + 20;
     var <bool> flag -> true;
 
     end;
