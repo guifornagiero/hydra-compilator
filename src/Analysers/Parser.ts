@@ -1,14 +1,23 @@
 import { Token } from "../Models/Token";
 import Tree from "../Models/Tree";
 import TreeNode from "../Models/TreeNode";
+import fs from "fs";
+import Semantic from "./Semantic";
 
 export default class Parser {
     private tokens: Token[];
     private token: Token | null;
 
+    private HEADER: string = "import java.util.Scanner; \npublic class Main { \npublic static void main(String[] args) {\n";
+    private FOOTER: string = "\n}\n}\n";
+
+    private semantic: Semantic;
+    private lastType: string = "";
+
     constructor(tokens: Token[]) {
         this.tokens = tokens;
         this.token = this.getNextToken();
+        this.semantic = new Semantic();
     }
 
     public parse(): Tree {
@@ -298,13 +307,15 @@ export default class Parser {
 
     private TIPO(node: TreeNode): boolean {
         const tipo = node.addNodeByName("TIPO");
+        const tipoName = this.token?.lexema;
 
         if (
             this.matchType("INTEGER", tipo) ||
-            this.matchType("STRING", tipo) ||
-            this.matchType("DECIMAL", tipo) ||
-            this.matchType("BOOLEAN", tipo)
+            this.matchType("STRING", tipo, "String") ||
+            this.matchType("DECIMAL", tipo, "float") ||
+            this.matchType("BOOLEAN", tipo, "boolean")
         ) {
+            this.lastType = tipoName!;
             return true;
         }
 
@@ -460,7 +471,7 @@ export default class Parser {
         if (
             this.matchLexem(">=", operadorRelacional) ||
             this.matchLexem("<=", operadorRelacional) ||
-            this.matchLexem("=", operadorRelacional) ||
+            this.matchLexem("=", operadorRelacional, "==") ||
             this.matchLexem("<", operadorRelacional) ||
             this.matchLexem(">", operadorRelacional)
         )
@@ -471,7 +482,7 @@ export default class Parser {
     }
 
     private while(node: TreeNode): boolean {
-        if (this.matchLexem("@w", node))
+        if (this.matchLexem("@w", node, "while"))
             return true;
 
         this.erro("while");
@@ -479,7 +490,7 @@ export default class Parser {
     }
 
     private elseif(node: TreeNode): boolean {
-        if (this.matchLexem("@ei", node))
+        if (this.matchLexem("@ei", node, "else if"))
             return true;
 
         this.erro("elseif");
@@ -487,7 +498,7 @@ export default class Parser {
     }
 
     private else(node: TreeNode): boolean {
-        if (this.matchLexem("@e", node))
+        if (this.matchLexem("@e", node, "else"))
             return true;
 
         this.erro("else");
@@ -495,7 +506,7 @@ export default class Parser {
     }
 
     private comment(node: TreeNode): boolean {
-        if (this.matchType("COMMENT", node))
+        if (this.matchType("COMMENT", node, ""))
             return true;
 
         this.erro("comment");
@@ -513,7 +524,7 @@ export default class Parser {
     }
 
     private print(node: TreeNode): boolean {
-        if (this.matchLexem("@p", node))
+        if (this.matchLexem("@p", node, "System.out.print"))
             return true;
 
         this.erro("print");
@@ -549,7 +560,7 @@ export default class Parser {
     }
 
     private var(node: TreeNode): boolean {
-        if (this.matchLexem("var", node))
+        if (this.matchLexem("var", node, ""))
             return true;
 
         this.erro("var");
@@ -557,7 +568,7 @@ export default class Parser {
     }
 
     private lessThen(node: TreeNode): boolean {
-        if (this.matchLexem("<", node))
+        if (this.matchLexem("<", node, ""))
             return true;
 
         this.erro("lessThen");
@@ -565,7 +576,7 @@ export default class Parser {
     }
 
     private greaterThen(node: TreeNode): boolean {
-        if (this.matchLexem(">", node))
+        if (this.matchLexem(">", node, " "))
             return true;
 
         this.erro("greaterThen");
@@ -574,16 +585,19 @@ export default class Parser {
 
     private id(node: TreeNode): boolean {
         const id = node.addNodeByName("id");
+        const idName = this.token?.lexema;
 
-        if (this.matchType("ID", id))
+        if (this.matchType("ID", id)) {
+            this.semantic.declareVariable(idName!, this.lastType);
             return true;
+        }
 
         this.erro("id");
         return false;
     }
 
     private declarationArrow(node: TreeNode): boolean {
-        if (this.matchLexem("->", node))
+        if (this.matchLexem("->", node, "="))
             return true;
 
         this.erro("declarationArrow");
@@ -598,7 +612,7 @@ export default class Parser {
         return false;
     }
 
-    private openPar(node?: TreeNode): boolean {
+    private openPar(node: TreeNode): boolean {
         if (this.matchLexem("(", node))
             return true;
 
@@ -606,7 +620,7 @@ export default class Parser {
         return false;
     }
 
-    private closePar(node?: TreeNode): boolean {
+    private closePar(node: TreeNode): boolean {
         if (this.matchLexem(")", node))
             return true;
 
@@ -614,15 +628,15 @@ export default class Parser {
         return false;
     }
 
-    private scopeArrow(node?: TreeNode): boolean {
-        if (this.matchLexem(">->", node))
+    private scopeArrow(node: TreeNode): boolean {
+        if (this.matchLexem(">->", node, ""))
             return true;
 
         this.erro("scopeArrow");
         return false;
     }
 
-    private openBracket(node?: TreeNode): boolean {
+    private openBracket(node: TreeNode): boolean {
         if (this.matchLexem("{", node))
             return true;
 
@@ -630,7 +644,7 @@ export default class Parser {
         return false;
     }
 
-    private closeBracket(node?: TreeNode): boolean {
+    private closeBracket(node: TreeNode): boolean {
         if (this.matchLexem("}", node))
             return true;
 
@@ -638,8 +652,8 @@ export default class Parser {
         return false;
     }
 
-    private if(node?: TreeNode): boolean {
-        if (this.matchLexem("@i", node))
+    private if(node: TreeNode): boolean {
+        if (this.matchLexem("@i", node, "if"))
             return true;
 
         this.erro("if");
@@ -647,7 +661,7 @@ export default class Parser {
     }
 
     private for(node: TreeNode): boolean {
-        if (this.matchLexem("@f", node))
+        if (this.matchLexem("@f", node, "for"))
             return true;
 
         this.erro("for");
@@ -655,7 +669,7 @@ export default class Parser {
     }
 
     private up(node: TreeNode): boolean {
-        if (this.matchLexem("up", node))
+        if (this.matchLexem("up", node, "++"))
             return true;
 
         this.erro("up");
@@ -681,7 +695,7 @@ export default class Parser {
     private BEGIN(node: TreeNode): boolean {
         const begin = node.addNodeByName("BEGIN");
 
-        if (this.matchLexem("begin", begin) && this.matchLexem(";", begin))
+        if (this.matchLexem("begin", begin, this.HEADER) && this.matchLexem(";", begin, ""))
             return true;
 
         this.erro("begin");
@@ -691,7 +705,7 @@ export default class Parser {
     private END(node: TreeNode): boolean {
         const end = node.addNodeByName("END");
 
-        if (this.matchLexem("end", end) && this.matchLexem(";", end))
+        if (this.matchLexem("end", end, this.FOOTER) && this.matchLexem(";", end, ""))
             return true;
 
         this.erro("end");
@@ -699,27 +713,34 @@ export default class Parser {
     }
     //#endregion
 
-    private matchType(type: string, node?: TreeNode): boolean {
+    private matchType(type: string, node: TreeNode, newCode?: string): boolean {
         if (this.token?.tipo === type) {
-            node?.addNodeByName(this.token?.lexema);
+            node.addNodeByName(this.token?.lexema);
+            this.translate(newCode == undefined ? this.token.lexema : newCode);
             
             this.token = this.getNextToken();
             return true;
         }
 
-        node?.addNodeByName("EXPECTED: " + type + " - RECEIVED: " + this.token?.tipo);
+        node.addNodeByName("EXPECTED: " + type + " - RECEIVED: " + this.token?.tipo);
         return false;
     }
 
-    private matchLexem(lexem: string, node?: TreeNode): boolean {
+    private matchLexem(lexem: string, node: TreeNode, newCode?: string): boolean {
         if (this.token?.lexema === lexem) {
-            node?.addNodeByName(this.token?.lexema);
+            node.addNodeByName(this.token?.lexema);
+            this.translate(newCode == undefined ? lexem : newCode);
 
             this.token = this.getNextToken();
             return true;
         }
 
-        node?.addNodeByName("EXPECTED: " + lexem + " - RECEIVED: " + this.token?.lexema);
+        node.addNodeByName("EXPECTED: " + lexem + " - RECEIVED: " + this.token?.lexema);
         return false;
+    }
+
+    private translate(code: string): void {
+        // console.log(code);
+        fs.appendFileSync("output.txt", code);
     }
 }
