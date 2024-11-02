@@ -74,35 +74,6 @@ export default class Parser {
         return false;
     }
 
-    private READ(): boolean {
-        if (
-            this.var() &&
-            this.lessThen() &&
-            this.string() &&
-            this.greaterThen() &&
-            this.id() &&
-            this.declarationArrow() &&
-            this.read() &&
-            this.openPar() &&
-            this.R() &&
-            this.closePar() &&
-            this.semi()
-        ) {
-            return true;
-        }
-
-        this.erro("READ");
-        return false;
-    }
-
-    private R(): boolean {
-        if (this.string()){
-            return true;
-        }
-
-        return false;
-    }
-
     private PRINT(): boolean {
         if (
             this.print() &&
@@ -402,13 +373,14 @@ export default class Parser {
     }
 
     private EXPRESSION(): boolean {
-        if (this.token?.tipo === "LITERAL_STRING") {
+        if (this.token?.tipo === "READ_FUNCTION") {
+            if (this.READ_FUNCTION()) {
+                return true;
+            }
+        } else if (this.token?.tipo === "LITERAL_STRING") {
             this.token = this.getNextToken();
             return true;
-        } else if (
-            this.token?.tipo === "TRUE" ||
-            this.token?.tipo === "FALSE"
-        ) {
+        } else if (this.token?.tipo === "TRUE" || this.token?.tipo === "FALSE") {
             this.token = this.getNextToken();
             return true;
         } else if (this.E()) {
@@ -416,6 +388,15 @@ export default class Parser {
         }
 
         this.erro("EXPRESSION");
+        return false;
+    }
+
+    private READ_FUNCTION(): boolean {
+        if (this.read() && this.openPar() && this.string() && this.closePar()) {
+            return true;
+        }
+
+        this.erro("R");
         return false;
     }
 

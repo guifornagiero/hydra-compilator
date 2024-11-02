@@ -3,9 +3,17 @@ import Parser from "./Analysers/Parser";
 
 const code = `
     begin;
-    -- teste jwehduw --
-    -- 19019013 + 173813 / 78223 ? --
-    -- teste commit --
+    var <string> input -> @r("Enter your name: ");
+    var <int> num -> 10 + 20 - 30;
+    var <bool> isTrue -> true;
+
+    @i (num > 0) >-> {
+        @p("Positive number");
+    } @ei (num < 0) >-> {
+        @p("Negative number");
+    } @e >-> {
+        @p("Zero");
+    }
     end;
 `;
 const lexer = new Lexer(code);
