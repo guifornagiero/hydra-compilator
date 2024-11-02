@@ -1,4 +1,6 @@
 import { Token } from "../Models/Token";
+import Tree from "../Models/Tree";
+import TreeNode from "../Models/TreeNode";
 
 export default class Parser {
     private tokens: Token[];
@@ -9,12 +11,17 @@ export default class Parser {
         this.token = this.getNextToken();
     }
 
-    public parse(): void {
-        if (this.PROGRAMA()) {
-            console.log("Código válido!");
+    public parse(): Tree {
+        const program = new TreeNode("PROGRAMA");
+        const tree = new Tree(program);
+
+        if (this.PROGRAMA(program)) {
+            console.log("Código válido!\n");
         } else {
             console.log("Código inválido!");
         }
+
+        return tree;
     }
 
     private getNextToken(): Token | null {
@@ -29,8 +36,8 @@ export default class Parser {
     }
 
     //#region Regras
-    private PROGRAMA(): boolean {
-        if (this.begin() && this.BLOCO() && this.end()) {
+    private PROGRAMA(node: TreeNode): boolean {
+        if (this.BEGIN(node) && this.BLOCO(node) && this.END(node)) {
             if (this.token?.tipo === "EOF") {
                 return true;
             }
@@ -40,29 +47,31 @@ export default class Parser {
         return false;
     }
 
-    private BLOCO(): boolean {
+    private BLOCO(node: TreeNode): boolean {
+        const bloco = node.addNodeByName("BLOCO");
+
         if (this.token?.tipo === "IF") {
-            if (this.IF() && this.BLOCO()) {
+            if (this.IF(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
         } else if (this.token?.tipo === "FOR") {
-            if (this.FOR() && this.BLOCO()) {
+            if (this.FOR(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
         } else if (this.token?.tipo === "WHILE") {
-            if (this.WHILE() && this.BLOCO()) {
+            if (this.WHILE(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
         } else if (this.token?.tipo === "VAR") {
-            if (this.DECLARACAO() && this.BLOCO()) {
+            if (this.DECLARACAO(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
         } else if (this.token?.tipo === "PRINT_FUNCTION") {
-            if (this.PRINT() && this.BLOCO()) {
+            if (this.PRINT(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
         } else if (this.token?.tipo === "COMMENT"){
-            if (this.COMENTARIO() && this.BLOCO()){
+            if (this.COMENTARIO(bloco) && this.BLOCO(bloco)){
                 return true;
             }
         } else {
@@ -73,13 +82,15 @@ export default class Parser {
         return false;
     }
 
-    private PRINT(): boolean {
+    private PRINT(node: TreeNode): boolean {
+        const print = node.addNodeByName("PRINT");
+
         if (
-            this.print() &&
-            this.openPar() &&
-            this.P() &&
-            this.closePar() &&
-            this.semi()
+            this.print(print) &&
+            this.openPar(print) &&
+            this.P(print) &&
+            this.closePar(print) &&
+            this.semi(print)
         ) {
             return true;
         }
@@ -88,8 +99,10 @@ export default class Parser {
         return false;
     }
 
-    private P(): boolean {
-        if (this.matchType("LITERAL_STRING") || this.E()) {
+    private P(node: TreeNode): boolean {
+        const p = node.addNodeByName("P");
+
+        if (this.matchType("LITERAL_STRING", p) || this.E(p)) {
             return true;
         }
 
@@ -97,8 +110,10 @@ export default class Parser {
         return false;
     }
 
-    private COMENTARIO(): boolean {
-        if (this.comment()) {
+    private COMENTARIO(node: TreeNode): boolean {
+        const comentario = node.addNodeByName("COMENTARIO");
+
+        if (this.comment(comentario)) {
             return true;
         }
 
@@ -106,17 +121,19 @@ export default class Parser {
         return false;
     }
 
-    private IF(): boolean {
+    private IF(node: TreeNode): boolean {
+        const ifNode = node.addNodeByName("IF");
+
         if (
-            this.if() &&
-            this.openPar() &&
-            this.CONDICAO() &&
-            this.closePar() &&
-            this.scopeArrow() &&
-            this.openBracket() &&
-            this.BLOCO() &&
-            this.closeBracket() &&
-            this.X()
+            this.if(ifNode) &&
+            this.openPar(ifNode) &&
+            this.CONDICAO(ifNode) &&
+            this.closePar(ifNode) &&
+            this.scopeArrow(ifNode) &&
+            this.openBracket(ifNode) &&
+            this.BLOCO(ifNode) &&
+            this.closeBracket(ifNode) &&
+            this.X(ifNode)
         ) {
             return true;
         }
@@ -125,13 +142,15 @@ export default class Parser {
         return false;
     }
 
-    private X(): boolean {
+    private X(node: TreeNode): boolean {
+        const x = node.addNodeByName("X");
+
         if (this.token?.lexema === "@ei") {
-            if (this.ELSE_IF() && this.X()) {
+            if (this.ELSE_IF(x) && this.X(x)) {
                 return true;
             }
         } else if (this.token?.lexema === "@e") {
-            if (this.ELSE()) {
+            if (this.ELSE(x)) {
                 return true;
             }
         } else {
@@ -142,16 +161,18 @@ export default class Parser {
         return false;
     }
 
-    private ELSE_IF(): boolean {
+    private ELSE_IF(node: TreeNode): boolean {
+        const elseIf = node.addNodeByName("ELSE_IF");
+
         if (
-            this.elseif() &&
-            this.openPar() &&
-            this.CONDICAO() &&
-            this.closePar() &&
-            this.scopeArrow() &&
-            this.openBracket() &&
-            this.BLOCO() &&
-            this.closeBracket()
+            this.elseif(elseIf) &&
+            this.openPar(elseIf) &&
+            this.CONDICAO(elseIf) &&
+            this.closePar(elseIf) &&
+            this.scopeArrow(elseIf) &&
+            this.openBracket(elseIf) &&
+            this.BLOCO(elseIf) &&
+            this.closeBracket(elseIf)
         ) {
             return true;
         }
@@ -160,13 +181,15 @@ export default class Parser {
         return false;
     }
 
-    private ELSE(): boolean {
+    private ELSE(node: TreeNode): boolean {
+        const elseNode = node.addNodeByName("ELSE");
+
         if (
-            this.else() &&
-            this.scopeArrow() &&
-            this.openBracket() &&
-            this.BLOCO() &&
-            this.closeBracket()
+            this.else(elseNode) &&
+            this.scopeArrow(elseNode) &&
+            this.openBracket(elseNode) &&
+            this.BLOCO(elseNode) &&
+            this.closeBracket(elseNode)
         ) {
             return true;
         }
@@ -175,16 +198,18 @@ export default class Parser {
         return false;
     }
 
-    private FOR(): boolean {
+    private FOR(node: TreeNode): boolean {
+        const forNode = node.addNodeByName("FOR");
+
         if (
-            this.for() &&
-            this.openPar() &&
-            this.FOR_CONDICAO() &&
-            this.closePar() &&
-            this.scopeArrow() &&
-            this.openBracket() &&
-            this.BLOCO() &&
-            this.closeBracket()
+            this.for(forNode) &&
+            this.openPar(forNode) &&
+            this.FOR_CONDICAO(forNode) &&
+            this.closePar(forNode) &&
+            this.scopeArrow(forNode) &&
+            this.openBracket(forNode) &&
+            this.BLOCO(forNode) &&
+            this.closeBracket(forNode)
         ) {
             return true;
         }
@@ -193,16 +218,18 @@ export default class Parser {
         return false;
     }
 
-    private WHILE(): boolean {
+    private WHILE(node: TreeNode): boolean {
+        const whileNode = node.addNodeByName("WHILE");
+
         if (
-            this.while() &&
-            this.openPar() &&
-            this.CONDICAO() &&
-            this.closePar() &&
-            this.scopeArrow() &&
-            this.openBracket() &&
-            this.BLOCO() &&
-            this.closeBracket()
+            this.while(whileNode) &&
+            this.openPar(whileNode) &&
+            this.CONDICAO(whileNode) &&
+            this.closePar(whileNode) &&
+            this.scopeArrow(whileNode) &&
+            this.openBracket(whileNode) &&
+            this.BLOCO(whileNode) &&
+            this.closeBracket(whileNode)
         ) {
             return true;
         }
@@ -211,8 +238,10 @@ export default class Parser {
         return false;
     }
 
-    private CONDICAO(): boolean {
-        if (this.E() && this.operadorRelacional() && this.E()) {
+    private CONDICAO(node: TreeNode): boolean {
+        const condicao = node.addNodeByName("CONDICAO");
+
+        if (this.E(condicao) && this.operadorRelacional(condicao) && this.E(condicao)) {
             return true;
         }
 
@@ -220,23 +249,25 @@ export default class Parser {
         return false;
     }
 
-    private FOR_CONDICAO(): boolean {
+    private FOR_CONDICAO(node: TreeNode): boolean {
+        const forCondicao = node.addNodeByName("FOR_CONDICAO");
+
         if (
-            this.var() &&
-            this.lessThen() &&
-            this.TIPO() &&
-            this.greaterThen() &&
-            this.id() &&
-            this.declarationArrow() &&
-            this.E() &&
-            this.or() &&
-            this.from() &&
-            this.id() &&
-            this.to() &&
-            this.E() &&
-            this.or() &&
-            this.up() &&
-            this.id()
+            this.var(forCondicao) &&
+            this.lessThen(forCondicao) &&
+            this.TIPO(forCondicao) &&
+            this.greaterThen(forCondicao) &&
+            this.id(forCondicao) &&
+            this.declarationArrow(forCondicao) &&
+            this.E(forCondicao) &&
+            this.or(forCondicao) &&
+            this.from(forCondicao) &&
+            this.id(forCondicao) &&
+            this.to(forCondicao) &&
+            this.E(forCondicao) &&
+            this.or(forCondicao) &&
+            this.up(forCondicao) &&
+            this.id(forCondicao)
         ) {
             return true;
         }
@@ -245,16 +276,18 @@ export default class Parser {
         return false;
     }
 
-    private DECLARACAO(): boolean {
+    private DECLARACAO(node: TreeNode): boolean {
+        const declaracao = node.addNodeByName("DECLARACAO");
+
         if (
-            this.var() &&
-            this.lessThen() &&
-            this.TIPO() &&
-            this.greaterThen() &&
-            this.id() &&
-            this.declarationArrow() &&
-            this.EXPRESSION() &&
-            this.semi()
+            this.var(declaracao) &&
+            this.lessThen(declaracao) &&
+            this.TIPO(declaracao) &&
+            this.greaterThen(declaracao) &&
+            this.id(declaracao) &&
+            this.declarationArrow(declaracao) &&
+            this.EXPRESSION(declaracao) &&
+            this.semi(declaracao)
         ) {
             return true;
         }
@@ -263,14 +296,15 @@ export default class Parser {
         return false;
     }
 
-    private TIPO(): boolean {
+    private TIPO(node: TreeNode): boolean {
+        const tipo = node.addNodeByName("TIPO");
+
         if (
-            this.token?.tipo === "INTEGER" ||
-            this.token?.tipo === "STRING" ||
-            this.token?.tipo === "DECIMAL" ||
-            this.token?.tipo === "BOOLEAN"
+            this.matchType("INTEGER", tipo) ||
+            this.matchType("STRING", tipo) ||
+            this.matchType("DECIMAL", tipo) ||
+            this.matchType("BOOLEAN", tipo)
         ) {
-            this.token = this.getNextToken();
             return true;
         }
 
@@ -278,20 +312,22 @@ export default class Parser {
         return false;
     }
 
-    private EXPRESSION(): boolean {
+    private EXPRESSION(node: TreeNode): boolean {
+        const expression = node.addNodeByName("EXPRESSION");
+
         if (this.token?.tipo === "READ_FUNCTION") {
-            if (this.READ_FUNCTION()) {
+            if (this.READ_FUNCTION(expression)) {
                 return true;
             }
         } else if (this.token?.tipo === "LITERAL_STRING") {
-            if (this.string()) {
+            if (this.string(expression)) {
                 return true;
             }
         } else if (this.token?.tipo === "TRUE" || this.token?.tipo === "FALSE") {
-            if (this.trueOrFalse()) {
+            if (this.trueOrFalse(expression)) {
                 return true;
             }
-        } else if (this.E()) {
+        } else if (this.E(expression)) {
             return true;
         }
 
@@ -299,8 +335,15 @@ export default class Parser {
         return false;
     }
 
-    private READ_FUNCTION(): boolean {
-        if (this.read() && this.openPar() && this.string() && this.closePar()) {
+    private READ_FUNCTION(node: TreeNode): boolean {
+        const readFunction = node.addNodeByName("READ_FUNCTION");
+
+        if (
+            this.read(readFunction) &&
+            this.openPar(readFunction) &&
+            this.string(readFunction) &&
+            this.closePar(readFunction)
+        ) {
             return true;
         }
 
@@ -308,8 +351,10 @@ export default class Parser {
         return false;
     }
 
-    private E(): boolean {
-        if (this.T() && this.E_()) {
+    private E(node: TreeNode): boolean {
+        const e = node.addNodeByName("E");
+
+        if (this.T(e) && this.E_(e)) {
             return true;
         }
 
@@ -317,15 +362,15 @@ export default class Parser {
         return false;
     }
 
-    private E_(): boolean {
+    private E_(node: TreeNode): boolean {
+        const e_ = node.addNodeByName("E_");
+
         if (this.token?.lexema === "+") {
-            this.token = this.getNextToken();
-            if (this.T() && this.E_()) {
+            if (this.matchLexem("+", e_) && this.T(e_) && this.E_(e_)) {
                 return true;
             }
         } else if (this.token?.lexema === "-") {
-            this.token = this.getNextToken();
-            if (this.T() && this.E_()) {
+            if (this.matchLexem("-", e_) && this.T(e_) && this.E_(e_)) {
                 return true;
             }
         } else {
@@ -336,8 +381,10 @@ export default class Parser {
         return false;
     }
 
-    private T(): boolean {
-        if (this.F() && this.T_()) {
+    private T(node: TreeNode): boolean {
+        const t = node.addNodeByName("T");
+
+        if (this.F(t) && this.T_(t)) {
             return true;
         }
 
@@ -345,15 +392,15 @@ export default class Parser {
         return false;
     }
 
-    private T_(): boolean {
+    private T_(node: TreeNode): boolean {
+        const t_ = node.addNodeByName("T_");
+
         if (this.token?.lexema === "*") {
-            this.token = this.getNextToken();
-            if (this.F() && this.T_()) {
+            if (this.matchLexem("*", t_) && this.F(t_) && this.T_(t_)) {
                 return true;
             }
         } else if (this.token?.lexema === "/") {
-            this.token = this.getNextToken();
-            if (this.F() && this.T_()) {
+            if (this.matchLexem("/", t_) && this.F(t_) && this.T_(t_)) {
                 return true;
             }
         } else {
@@ -364,20 +411,20 @@ export default class Parser {
         return false;
     }
 
-    private F(): boolean {
+    private F(node: TreeNode): boolean {
+        const f = node.addNodeByName("F");
+
         if (this.token?.tipo === "ID") {
-            if (this.id())
+            if (this.id(f))
                 return true;
         } else if (this.token?.tipo === "DEC") {
-            if (this.dec())
+            if (this.dec(f))
                 return true;
         } else if (this.token?.tipo === "NUM") {
-            if (this.num())
+            if (this.num(f))
                 return true;
         } else if (this.token?.lexema === "(") {
-            this.token = this.getNextToken();
-            if (this.E() && this.token?.lexema === ")") {
-                this.token = this.getNextToken();
+            if (this.matchLexem("(", f) && this.E(f) && this.matchLexem(")", f)) {
                 return true;
             }
         }
@@ -389,29 +436,29 @@ export default class Parser {
     //#endregion
 
     //#region Terminais
-    private trueOrFalse(): boolean {
-        if (this.matchLexem("true") || this.matchType("false"))
+    private trueOrFalse(node: TreeNode): boolean {
+        if (this.matchLexem("true", node) || this.matchType("false", node))
             return true;
 
         this.erro("trueOrFalse");
         return false;
     }
 
-    private or(): boolean {
-        if (this.matchLexem("|"))
+    private or(node: TreeNode): boolean {
+        if (this.matchLexem("|", node))
             return true;
 
         this.erro("or");
         return false;
     }
 
-    private operadorRelacional(): boolean {
+    private operadorRelacional(node: TreeNode): boolean {
         if (
-            this.matchLexem(">=") ||
-            this.matchLexem("<=") ||
-            this.matchLexem("=") ||
-            this.matchLexem("<") ||
-            this.matchLexem(">")
+            this.matchLexem(">=", node) ||
+            this.matchLexem("<=", node) ||
+            this.matchLexem("=", node) ||
+            this.matchLexem("<", node) ||
+            this.matchLexem(">", node)
         )
             return true;
 
@@ -419,216 +466,220 @@ export default class Parser {
         return false;
     }
 
-    private while(): boolean {
-        if (this.matchLexem("@w"))
+    private while(node: TreeNode): boolean {
+        if (this.matchLexem("@w", node))
             return true;
 
         this.erro("while");
         return false;
     }
 
-    private elseif(): boolean {
-        if (this.matchLexem("@ei"))
+    private elseif(node: TreeNode): boolean {
+        if (this.matchLexem("@ei", node))
             return true;
 
         this.erro("elseif");
         return false;
     }
 
-    private else(): boolean {
-        if (this.matchLexem("@e"))
+    private else(node: TreeNode): boolean {
+        if (this.matchLexem("@e", node))
             return true;
 
         this.erro("else");
         return false;
     }
 
-    private comment(): boolean {
-        if (this.matchType("COMMENT"))
+    private comment(node: TreeNode): boolean {
+        if (this.matchType("COMMENT", node))
             return true;
 
         this.erro("comment");
         return false;
     }
 
-    private string(): boolean {
-        if (this.matchType("LITERAL_STRING"))
+    private string(node: TreeNode): boolean {
+        if (this.matchType("LITERAL_STRING", node))
             return true;
 
         this.erro("string");
         return false;
     }
 
-    private print(): boolean {
-        if (this.matchLexem("@p"))
+    private print(node: TreeNode): boolean {
+        if (this.matchLexem("@p", node))
             return true;
 
         this.erro("print");
         return false;
     }
 
-    private read(): boolean {
-        if (this.matchLexem("@r"))
+    private read(node: TreeNode): boolean {
+        if (this.matchLexem("@r", node))
             return true;
 
         this.erro("read");
         return false;
     }
 
-    private num(): boolean {
-        if (this.matchType("NUM"))
+    private num(node: TreeNode): boolean {
+        if (this.matchType("NUM", node))
             return true;
 
         this.erro("num");
         return false;
     }
 
-    private dec(): boolean {
-        if (this.matchType("DEC"))
+    private dec(node: TreeNode): boolean {
+        if (this.matchType("DEC", node))
             return true;
 
         this.erro("dec");
         return false;
     }
 
-    private var(): boolean {
-        if (this.matchLexem("var"))
+    private var(node: TreeNode): boolean {
+        if (this.matchLexem("var", node))
             return true;
 
         this.erro("var");
         return false;
     }
 
-    private lessThen(): boolean {
-        if (this.matchLexem("<"))
+    private lessThen(node: TreeNode): boolean {
+        if (this.matchLexem("<", node))
             return true;
 
         this.erro("lessThen");
         return false;
     }
 
-    private greaterThen(): boolean {
-        if (this.matchLexem(">"))
+    private greaterThen(node: TreeNode): boolean {
+        if (this.matchLexem(">", node))
             return true;
 
         this.erro("greaterThen");
         return false;
     }
 
-    private id(): boolean {
-        if (this.matchType("ID"))
+    private id(node: TreeNode): boolean {
+        if (this.matchType("ID", node))
             return true;
 
         this.erro("id");
         return false;
     }
 
-    private declarationArrow(): boolean {
-        if (this.matchLexem("->"))
+    private declarationArrow(node: TreeNode): boolean {
+        if (this.matchLexem("->", node))
             return true;
 
         this.erro("declarationArrow");
         return false;
     }
 
-    private semi(): boolean {
-        if (this.matchLexem(";"))
+    private semi(node: TreeNode): boolean {
+        if (this.matchLexem(";", node))
             return true;
 
         this.erro("semi");
         return false;
     }
 
-    private openPar(): boolean {
-        if (this.matchLexem("("))
+    private openPar(node?: TreeNode): boolean {
+        if (this.matchLexem("(", node))
             return true;
 
         this.erro("openPar");
         return false;
     }
 
-    private closePar(): boolean {
-        if (this.matchLexem(")"))
+    private closePar(node?: TreeNode): boolean {
+        if (this.matchLexem(")", node))
             return true;
 
         this.erro("closePar");
         return false;
     }
 
-    private scopeArrow(): boolean {
-        if (this.matchLexem(">->"))
+    private scopeArrow(node?: TreeNode): boolean {
+        if (this.matchLexem(">->", node))
             return true;
 
         this.erro("scopeArrow");
         return false;
     }
 
-    private openBracket(): boolean {
-        if (this.matchLexem("{"))
+    private openBracket(node?: TreeNode): boolean {
+        if (this.matchLexem("{", node))
             return true;
 
         this.erro("openBracket");
         return false;
     }
 
-    private closeBracket(): boolean {
-        if (this.matchLexem("}"))
+    private closeBracket(node?: TreeNode): boolean {
+        if (this.matchLexem("}", node))
             return true;
 
         this.erro("closeBracket");
         return false;
     }
 
-    private if(): boolean {
-        if (this.matchLexem("@i"))
+    private if(node?: TreeNode): boolean {
+        if (this.matchLexem("@i", node))
             return true;
 
         this.erro("if");
         return false;
     }
 
-    private for(): boolean {
-        if (this.matchLexem("@f"))
+    private for(node: TreeNode): boolean {
+        if (this.matchLexem("@f", node))
             return true;
 
         this.erro("for");
         return false;
     }
 
-    private up(): boolean {
-        if (this.matchLexem("up"))
+    private up(node: TreeNode): boolean {
+        if (this.matchLexem("up", node))
             return true;
 
         this.erro("up");
         return false;
     }
 
-    private from(): boolean {
-        if (this.matchLexem("from"))
+    private from(node: TreeNode): boolean {
+        if (this.matchLexem("from", node))
             return true;
 
         this.erro("from");
         return false;
     }
 
-    private to(): boolean {
-        if (this.matchLexem("to"))
+    private to(node: TreeNode): boolean {
+        if (this.matchLexem("to", node))
             return true;
 
         this.erro("to");
         return false;
     }
 
-    private begin(): boolean {
-        if (this.matchLexem("begin") && this.matchLexem(";"))
+    private BEGIN(node: TreeNode): boolean {
+        const begin = node.addNodeByName("BEGIN");
+
+        if (this.matchLexem("begin", begin) && this.matchLexem(";", begin))
             return true;
 
         this.erro("begin");
         return false;
     }
 
-    private end(): boolean {
-        if (this.matchLexem("end") && this.matchLexem(";"))
+    private END(node: TreeNode): boolean {
+        const end = node.addNodeByName("END");
+
+        if (this.matchLexem("end", end) && this.matchLexem(";", end))
             return true;
 
         this.erro("end");
@@ -636,21 +687,27 @@ export default class Parser {
     }
     //#endregion
 
-    private matchType(type: string): boolean {
+    private matchType(type: string, node?: TreeNode): boolean {
         if (this.token?.tipo === type) {
+            node?.addNodeByName(this.token?.lexema);
+            
             this.token = this.getNextToken();
             return true;
         }
 
+        node?.addNodeByName("EXPECTED: " + type + " - RECEIVED: " + this.token?.tipo);
         return false;
     }
 
-    private matchLexem(lexem: string): boolean {
+    private matchLexem(lexem: string, node?: TreeNode): boolean {
         if (this.token?.lexema === lexem) {
+            node?.addNodeByName(this.token?.lexema);
+
             this.token = this.getNextToken();
             return true;
         }
 
+        node?.addNodeByName("EXPECTED: " + lexem + " - RECEIVED: " + this.token?.lexema);
         return false;
     }
 }
