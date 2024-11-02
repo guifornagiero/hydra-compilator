@@ -83,11 +83,31 @@ export default class Parser {
             if (this.COMENTARIO(bloco) && this.BLOCO(bloco)){
                 return true;
             }
+        } else if (this.token?.tipo === "ID") {
+            if (this.REDECLARACAO(bloco) && this.BLOCO(bloco)) {
+                return true;
+            }
         } else {
             return true;
         }
 
         this.erro("BLOCO");
+        return false;
+    }
+
+    private REDECLARACAO(node: TreeNode): boolean {
+        const redeclaracao = node.addNodeByName("REDECLARACAO");
+
+        if (
+            this.id(redeclaracao) &&
+            this.declarationArrow(redeclaracao) &&
+            this.EXPRESSION(redeclaracao) &&
+            this.semi(redeclaracao)
+        ) {
+            return true;
+        }
+
+        this.erro("REDECLARACAO");
         return false;
     }
 
