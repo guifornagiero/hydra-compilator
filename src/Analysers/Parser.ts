@@ -65,8 +65,7 @@ export default class Parser {
             if (this.COMENTARIO() && this.BLOCO()){
                 return true;
             }
-        }
-        else {
+        } else {
             return true;
         }
 
@@ -90,7 +89,7 @@ export default class Parser {
     }
 
     private P(): boolean {
-        if (this.string() || this.E()) {
+        if (this.matchType("LITERAL_STRING") || this.E()) {
             return true;
         }
 
@@ -104,44 +103,6 @@ export default class Parser {
         }
 
         this.erro("COMENTARIO");
-        return false;
-    }
-
-    private comment(): boolean {
-        if (this.token?.tipo === "COMMENT"){
-            this.token = this.getNextToken();
-            return true;
-        }
-        return false;
-    }
-
-    private string(): boolean {
-        if (this.token?.tipo === "LITERAL_STRING") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        // this.erro("string");
-        return false;
-    }
-
-    private print(): boolean {
-        if (this.token?.lexema === "@p") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        // this.erro("print");
-        return false;
-    }
-
-    private read(): boolean {
-        if (this.token?.lexema === "@r") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        // this.erro("print");
         return false;
     }
 
@@ -196,26 +157,6 @@ export default class Parser {
         }
 
         this.erro("ELSE_IF");
-        return false;
-    }
-
-    private elseif(): boolean {
-        if (this.token?.lexema === "@ei") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        // this.erro("elseif");
-        return false;
-    }
-
-    private else(): boolean {
-        if (this.token?.lexema === "@e") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        // this.erro("else");
         return false;
     }
 
@@ -304,41 +245,6 @@ export default class Parser {
         return false;
     }
 
-    private or(): boolean {
-        if (this.token?.tipo === "OR") {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        // this.erro("or");
-        return false;
-    }
-
-    private operadorRelacional(): boolean {
-        if (
-            this.token?.lexema === ">" ||
-            this.token?.lexema === "<" ||
-            this.token?.lexema === ">=" ||
-            this.token?.lexema === "<=" ||
-            this.token?.lexema === "="
-        ) {
-            this.token = this.getNextToken();
-            return true;
-        }
-
-        // this.erro("operadorRelacional");
-        return false;
-    }
-
-    private while(): boolean {
-        if (this.token?.tipo === "WHILE") {
-            this.token = this.getNextToken();
-            return true;
-        }
-        // this.erro("while");
-        return false;
-    }
-
     private DECLARACAO(): boolean {
         if (
             this.var() &&
@@ -378,11 +284,13 @@ export default class Parser {
                 return true;
             }
         } else if (this.token?.tipo === "LITERAL_STRING") {
-            this.token = this.getNextToken();
-            return true;
+            if (this.string()) {
+                return true;
+            }
         } else if (this.token?.tipo === "TRUE" || this.token?.tipo === "FALSE") {
-            this.token = this.getNextToken();
-            return true;
+            if (this.trueOrFalse()) {
+                return true;
+            }
         } else if (this.E()) {
             return true;
         }
@@ -458,14 +366,14 @@ export default class Parser {
 
     private F(): boolean {
         if (this.token?.tipo === "ID") {
-            this.token = this.getNextToken();
-            return true;
+            if (this.id())
+                return true;
         } else if (this.token?.tipo === "DEC") {
-            this.token = this.getNextToken();
-            return true;
+            if (this.dec())
+                return true;
         } else if (this.token?.tipo === "NUM") {
-            this.token = this.getNextToken();
-            return true;
+            if (this.num())
+                return true;
         } else if (this.token?.lexema === "(") {
             this.token = this.getNextToken();
             if (this.E() && this.token?.lexema === ")") {
@@ -481,180 +389,268 @@ export default class Parser {
     //#endregion
 
     //#region Terminais
-    private var(): boolean {
-        if (this.token?.lexema === "var") {
-            this.token = this.getNextToken();
+    private trueOrFalse(): boolean {
+        if (this.matchLexem("true") || this.matchType("false"))
             return true;
-        }
 
-        // this.erro("var");
+        this.erro("trueOrFalse");
+        return false;
+    }
+
+    private or(): boolean {
+        if (this.matchLexem("|"))
+            return true;
+
+        this.erro("or");
+        return false;
+    }
+
+    private operadorRelacional(): boolean {
+        if (
+            this.matchLexem(">=") ||
+            this.matchLexem("<=") ||
+            this.matchLexem("=") ||
+            this.matchLexem("<") ||
+            this.matchLexem(">")
+        )
+            return true;
+
+        this.erro("operadorRelacional");
+        return false;
+    }
+
+    private while(): boolean {
+        if (this.matchLexem("@w"))
+            return true;
+
+        this.erro("while");
+        return false;
+    }
+
+    private elseif(): boolean {
+        if (this.matchLexem("@ei"))
+            return true;
+
+        this.erro("elseif");
+        return false;
+    }
+
+    private else(): boolean {
+        if (this.matchLexem("@e"))
+            return true;
+
+        this.erro("else");
+        return false;
+    }
+
+    private comment(): boolean {
+        if (this.matchType("COMMENT"))
+            return true;
+
+        this.erro("comment");
+        return false;
+    }
+
+    private string(): boolean {
+        if (this.matchType("LITERAL_STRING"))
+            return true;
+
+        this.erro("string");
+        return false;
+    }
+
+    private print(): boolean {
+        if (this.matchLexem("@p"))
+            return true;
+
+        this.erro("print");
+        return false;
+    }
+
+    private read(): boolean {
+        if (this.matchLexem("@r"))
+            return true;
+
+        this.erro("read");
+        return false;
+    }
+
+    private num(): boolean {
+        if (this.matchType("NUM"))
+            return true;
+
+        this.erro("num");
+        return false;
+    }
+
+    private dec(): boolean {
+        if (this.matchType("DEC"))
+            return true;
+
+        this.erro("dec");
+        return false;
+    }
+
+    private var(): boolean {
+        if (this.matchLexem("var"))
+            return true;
+
+        this.erro("var");
         return false;
     }
 
     private lessThen(): boolean {
-        if (this.token?.lexema === "<") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("<"))
             return true;
-        }
 
-        // this.erro("<");
+        this.erro("lessThen");
         return false;
     }
 
     private greaterThen(): boolean {
-        if (this.token?.lexema === ">") {
-            this.token = this.getNextToken();
+        if (this.matchLexem(">"))
             return true;
-        }
 
-        // this.erro(">");
+        this.erro("greaterThen");
         return false;
     }
 
     private id(): boolean {
-        if (this.token?.tipo === "ID") {
-            this.token = this.getNextToken();
+        if (this.matchType("ID"))
             return true;
-        }
 
-        // this.erro("id");
+        this.erro("id");
         return false;
     }
 
     private declarationArrow(): boolean {
-        if (this.token?.lexema === "->") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("->"))
             return true;
-        }
 
-        // this.erro("->");
+        this.erro("declarationArrow");
         return false;
     }
 
     private semi(): boolean {
-        if (this.token?.lexema === ";") {
-            this.token = this.getNextToken();
+        if (this.matchLexem(";"))
             return true;
-        }
 
-        // this.erro(";");
+        this.erro("semi");
         return false;
     }
 
     private openPar(): boolean {
-        if (this.token?.lexema === "(") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("("))
             return true;
-        }
-        // this.erro("(");
+
+        this.erro("openPar");
         return false;
     }
 
     private closePar(): boolean {
-        if (this.token?.lexema === ")") {
-            this.token = this.getNextToken();
+        if (this.matchLexem(")"))
             return true;
-        }
-        // this.erro(")");
+
+        this.erro("closePar");
         return false;
     }
 
     private scopeArrow(): boolean {
-        if (this.token?.lexema === ">->") {
-            this.token = this.getNextToken();
+        if (this.matchLexem(">->"))
             return true;
-        }
-        // this.erro(">->");
+
+        this.erro("scopeArrow");
         return false;
     }
 
     private openBracket(): boolean {
-        if (this.token?.lexema === "{") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("{"))
             return true;
-        }
-        // this.erro("{");
+
+        this.erro("openBracket");
         return false;
     }
 
     private closeBracket(): boolean {
-        if (this.token?.lexema === "}") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("}"))
             return true;
-        }
-        // this.erro("}");
+
+        this.erro("closeBracket");
         return false;
     }
 
     private if(): boolean {
-        if (this.token?.tipo === "IF") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("@i"))
             return true;
-        }
-        // this.erro("if");
+
+        this.erro("if");
         return false;
     }
 
     private for(): boolean {
-        if (this.token?.tipo === "FOR") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("@f"))
             return true;
-        }
-        // this.erro("for");
+
+        this.erro("for");
         return false;
     }
 
     private up(): boolean {
-        if (this.token?.tipo === "UP") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("up"))
             return true;
-        }
-        // this.erro("up");
+
+        this.erro("up");
         return false;
     }
 
     private from(): boolean {
-        if (this.token?.tipo === "FROM") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("from"))
             return true;
-        }
-        // this.erro("from");
+
+        this.erro("from");
         return false;
     }
 
     private to(): boolean {
-        if (this.token?.tipo === "TO") {
-            this.token = this.getNextToken();
+        if (this.matchLexem("to"))
             return true;
-        }
-        // this.erro("to");
+
+        this.erro("to");
         return false;
     }
 
     private begin(): boolean {
-        if (this.token?.lexema === "begin") {
-            this.token = this.getNextToken();
-            if (this.token?.lexema === ";") {
-                this.token = this.getNextToken();
-                return true;
-            }
-        }
+        if (this.matchLexem("begin") && this.matchLexem(";"))
+            return true;
 
-        // this.erro("begin");
+        this.erro("begin");
         return false;
     }
 
     private end(): boolean {
-        if (this.token?.lexema === "end") {
-            this.token = this.getNextToken();
-            if (this.token?.lexema === ";") {
-                this.token = this.getNextToken();
-                return true;
-            }
-        }
+        if (this.matchLexem("end") && this.matchLexem(";"))
+            return true;
 
-        // this.erro("end");
+        this.erro("end");
         return false;
     }
     //#endregion
+
+    private matchType(type: string): boolean {
+        if (this.token?.tipo === type) {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        return false;
+    }
+
+    private matchLexem(lexem: string): boolean {
+        if (this.token?.lexema === lexem) {
+            this.token = this.getNextToken();
+            return true;
+        }
+
+        return false;
+    }
 }
