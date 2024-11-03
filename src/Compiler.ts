@@ -3,10 +3,7 @@ import Parser from "./Analysers/Parser";
 
 const code = `
     begin;
-    var <int> input -> 10;
-    var <string> name -> "John";
-    var <bool> isTrue -> true;
-    var <dec> pi -> 3.14;
+    var <asddd> aa -> 10;
     end;
 `;
 const lexer = new Lexer(code);

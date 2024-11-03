@@ -14,6 +14,8 @@ export default class Parser {
     private semantic: Semantic;
     private lastType: string = "";
 
+    private finalCode: string = "";
+
     constructor(tokens: Token[]) {
         this.tokens = tokens;
         this.token = this.getNextToken();
@@ -48,6 +50,7 @@ export default class Parser {
     private PROGRAMA(node: TreeNode): boolean {
         if (this.BEGIN(node) && this.BLOCO(node) && this.END(node)) {
             if (this.token?.tipo === "EOF") {
+                this.createTranslatedFile();
                 return true;
             }
         }
@@ -760,7 +763,10 @@ export default class Parser {
     }
 
     private translate(code: string): void {
-        // console.log(code);
-        fs.appendFileSync("output.txt", code);
+        this.finalCode += code;
+    }
+
+    private createTranslatedFile(): void {
+        fs.writeFileSync("output.txt", this.finalCode);
     }
 }
