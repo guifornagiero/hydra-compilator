@@ -1,7 +1,11 @@
 begin;
 
 @f (var <int> ii -> 10 | from ii to 0 | down ii) >-> {
-    @p(ii);
+    @i (ii = 2) >-> {
+        @p(ii);
+    } @ei (ii = 6) >-> {
+        @p(ii);
+    }
 }
 
 end;

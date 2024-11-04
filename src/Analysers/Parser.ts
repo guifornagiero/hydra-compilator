@@ -329,6 +329,11 @@ export default class Parser {
             this.UP_OR_DOWN(forCondicao) &&
             this.id(forCondicao)
         ) {
+            this.semantic.declareVariable(this.lastId, this.lastType, () => {
+                this.lastId = "";
+                this.lastType = "";
+            });
+
             return true;
         }
 
