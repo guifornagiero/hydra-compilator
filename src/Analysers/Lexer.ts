@@ -16,11 +16,22 @@ export default class Lexer {
         this.afds = [];
         this.code = code.split("");
 
-        this.afds.push(new ComplexToken(),new DecimalNumber(), new SingleToken(), new LiteralNumber(), new Identifier());
+        this.afds.push(
+            new ComplexToken(),
+            new DecimalNumber(),
+            new SingleToken(),
+            new LiteralNumber(),
+            new Identifier()
+        );
     }
 
     private skipWhiteSpace(): void {
-        while (this.code[0] === " " || this.code[0] === "\n") {
+        while (
+            this.code[0] === " " ||
+            this.code[0] === "\n" ||
+            this.code[0] === "\t" ||
+            this.code[0] === "\r"
+        ) {
             this.code.shift();
         }
     }
