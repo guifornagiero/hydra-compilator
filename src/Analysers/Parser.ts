@@ -256,7 +256,7 @@ export default class Parser {
         if (
             this.while(whileNode) &&
             this.openPar(whileNode) &&
-            this.CONDICAO(whileNode) &&
+            this.W(whileNode) &&
             this.closePar(whileNode) &&
             this.scopeArrow(whileNode) &&
             this.openBracket(whileNode) &&
@@ -267,6 +267,20 @@ export default class Parser {
         }
 
         this.erro("WHILE");
+        return false;
+    }
+
+    private W(node: TreeNode): boolean {
+        const w = node.addNodeByName("W");
+
+        if (this.token?.lexema === "true" || this.token?.lexema === "false") {
+            if (this.trueOrFalse(w))
+                return true;
+        } else if (this.CONDICAO(w)) {
+            return true;
+        }
+
+        this.erro("W");
         return false;
     }
 
