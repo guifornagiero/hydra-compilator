@@ -8,7 +8,10 @@ export default class Parser {
     private tokens: Token[];
     private token: Token | null;
 
-    private HEADER: string = "import java.util.Scanner; \npublic class Main { \npublic static void main(String[] args) {\n";
+    private HEADER: string = `import java.util.Scanner; \npublic class Main { 
+    public static boolean getCondition(int i, int limit) { if (i<limit) return i < limit; else return i > limit; }
+    public static void main(String[] args) {\n
+    `;
     private FOOTER: string = "\n}\n}\n";
 
     private semantic: Semantic;
@@ -85,8 +88,8 @@ export default class Parser {
             if (this.PRINT(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
-        } else if (this.token?.tipo === "COMMENT"){
-            if (this.COMENTARIO(bloco) && this.BLOCO(bloco)){
+        } else if (this.token?.tipo === "COMMENT") {
+            if (this.COMENTARIO(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
         } else if (this.token?.tipo === "ID") {
@@ -288,8 +291,7 @@ export default class Parser {
         const w = node.addNodeByName("W");
 
         if (this.token?.lexema === "true" || this.token?.lexema === "false") {
-            if (this.trueOrFalse(w))
-                return true;
+            if (this.trueOrFalse(w)) return true;
         } else if (this.CONDICAO(w)) {
             return true;
         }
@@ -322,18 +324,49 @@ export default class Parser {
             this.declarationArrow(forCondicao) &&
             this.E(forCondicao) &&
             this.or(forCondicao) &&
-            this.from(forCondicao) &&
-            this.id(forCondicao) &&
-            this.to(forCondicao) &&
-            this.E(forCondicao) &&
+            this.FROM_CONDITION(forCondicao) &&
             this.or(forCondicao) &&
-            this.up(forCondicao) &&
+            this.UP_OR_DOWN(forCondicao) &&
             this.id(forCondicao)
         ) {
             return true;
         }
 
         this.erro("FOR_CONDICAO");
+        return false;
+    }
+
+    private UP_OR_DOWN(node: TreeNode): boolean {
+        const upOrDown = node.addNodeByName("UP_OR_DOWN");
+
+        if (this.token?.lexema === "up") {
+            if (this.up(upOrDown)) {
+                return true;
+            }
+        } else if (this.token?.lexema === "down") {
+            if (this.down(upOrDown)) {
+                return true;
+            }
+        }
+
+        this.erro("UP_OR_DOWN");
+        return false;
+    }
+
+    private FROM_CONDITION(node: TreeNode): boolean {
+        const fromCondition = node.addNodeByName("FROM_CONDITION");
+
+        if (
+            this.from(fromCondition) &&
+            this.id(fromCondition) &&
+            this.to(fromCondition) &&
+            this.E(fromCondition)
+        ) {
+            this.translate(")");
+            return true;
+        }
+
+        this.erro("FROM_CONDITION");
         return false;
     }
 
@@ -484,14 +517,11 @@ export default class Parser {
         const f = node.addNodeByName("F");
 
         if (this.token?.tipo === "ID") {
-            if (this.id(f))
-                return true;
+            if (this.id(f)) return true;
         } else if (this.token?.tipo === "DEC") {
-            if (this.dec(f))
-                return true;
+            if (this.dec(f)) return true;
         } else if (this.token?.tipo === "NUM") {
-            if (this.num(f))
-                return true;
+            if (this.num(f)) return true;
         } else if (this.token?.lexema === "(") {
             if (this.matchLexem("(", f) && this.E(f) && this.matchLexem(")", f)) {
                 return true;
@@ -516,8 +546,7 @@ export default class Parser {
     }
 
     private or(node: TreeNode): boolean {
-        if (this.matchLexem("|", node, ";"))
-            return true;
+        if (this.matchLexem("|", node, ";")) return true;
 
         this.erro("or");
         return false;
@@ -540,32 +569,28 @@ export default class Parser {
     }
 
     private while(node: TreeNode): boolean {
-        if (this.matchLexem("@w", node, "while"))
-            return true;
+        if (this.matchLexem("@w", node, "while")) return true;
 
         this.erro("while");
         return false;
     }
 
     private elseif(node: TreeNode): boolean {
-        if (this.matchLexem("@ei", node, "else if"))
-            return true;
+        if (this.matchLexem("@ei", node, "else if")) return true;
 
         this.erro("elseif");
         return false;
     }
 
     private else(node: TreeNode): boolean {
-        if (this.matchLexem("@e", node, "else"))
-            return true;
+        if (this.matchLexem("@e", node, "else")) return true;
 
         this.erro("else");
         return false;
     }
 
     private comment(node: TreeNode): boolean {
-        if (this.matchType("COMMENT", node, ""))
-            return true;
+        if (this.matchType("COMMENT", node, "")) return true;
 
         this.erro("comment");
         return false;
@@ -574,24 +599,21 @@ export default class Parser {
     private string(node: TreeNode): boolean {
         const stringNode = node.addNodeByName("string");
 
-        if (this.matchType("LITERAL_STRING", stringNode))
-            return true;
+        if (this.matchType("LITERAL_STRING", stringNode)) return true;
 
         this.erro("string");
         return false;
     }
 
     private print(node: TreeNode): boolean {
-        if (this.matchLexem("@p", node, "System.out.print"))
-            return true;
+        if (this.matchLexem("@p", node, "System.out.println")) return true;
 
         this.erro("print");
         return false;
     }
 
     private read(node: TreeNode): boolean {
-        if (this.matchLexem("@r", node))
-            return true;
+        if (this.matchLexem("@r", node)) return true;
 
         this.erro("read");
         return false;
@@ -600,8 +622,7 @@ export default class Parser {
     private num(node: TreeNode): boolean {
         const num = node.addNodeByName("num");
 
-        if (this.matchType("NUM", num))
-            return true;
+        if (this.matchType("NUM", num)) return true;
 
         this.erro("num");
         return false;
@@ -610,32 +631,28 @@ export default class Parser {
     private dec(node: TreeNode): boolean {
         const dec = node.addNodeByName("dec");
 
-        if (this.matchType("DEC", dec))
-            return true;
+        if (this.matchType("DEC", dec)) return true;
 
         this.erro("dec");
         return false;
     }
 
     private var(node: TreeNode): boolean {
-        if (this.matchLexem("var", node, ""))
-            return true;
+        if (this.matchLexem("var", node, "")) return true;
 
         this.erro("var");
         return false;
     }
 
     private lessThen(node: TreeNode): boolean {
-        if (this.matchLexem("<", node, ""))
-            return true;
+        if (this.matchLexem("<", node, "")) return true;
 
         this.erro("lessThen");
         return false;
     }
 
     private greaterThen(node: TreeNode): boolean {
-        if (this.matchLexem(">", node, " "))
-            return true;
+        if (this.matchLexem(">", node, " ")) return true;
 
         this.erro("greaterThen");
         return false;
@@ -644,10 +661,9 @@ export default class Parser {
     private id(node: TreeNode): boolean {
         const id = node.addNodeByName("id");
         const idName = this.token?.lexema;
-        
+
         if (this.matchType("ID", id)) {
-            if (this.currentOperation !== "DECLARACAO")
-                this.semantic.variableExists(idName!);
+            if (this.currentOperation !== "DECLARACAO") this.semantic.variableExists(idName!);
 
             this.lastId = idName!;
             return true;
@@ -658,96 +674,91 @@ export default class Parser {
     }
 
     private declarationArrow(node: TreeNode): boolean {
-        if (this.matchLexem("->", node, "="))
-            return true;
+        if (this.matchLexem("->", node, "=")) return true;
 
         this.erro("declarationArrow");
         return false;
     }
 
     private semi(node: TreeNode): boolean {
-        if (this.matchLexem(";", node))
-            return true;
+        if (this.matchLexem(";", node)) return true;
 
         this.erro("semi");
         return false;
     }
 
     private openPar(node: TreeNode): boolean {
-        if (this.matchLexem("(", node))
-            return true;
+        if (this.matchLexem("(", node)) return true;
 
         this.erro("openPar");
         return false;
     }
 
     private closePar(node: TreeNode): boolean {
-        if (this.matchLexem(")", node))
-            return true;
+        if (this.matchLexem(")", node)) return true;
 
         this.erro("closePar");
         return false;
     }
 
     private scopeArrow(node: TreeNode): boolean {
-        if (this.matchLexem(">->", node, ""))
-            return true;
+        if (this.matchLexem(">->", node, "")) return true;
 
         this.erro("scopeArrow");
         return false;
     }
 
     private openBracket(node: TreeNode): boolean {
-        if (this.matchLexem("{", node))
-            return true;
+        if (this.matchLexem("{", node)) return true;
 
         this.erro("openBracket");
         return false;
     }
 
     private closeBracket(node: TreeNode): boolean {
-        if (this.matchLexem("}", node))
-            return true;
+        if (this.matchLexem("}", node)) return true;
 
         this.erro("closeBracket");
         return false;
     }
 
     private if(node: TreeNode): boolean {
-        if (this.matchLexem("@i", node, "if"))
-            return true;
+        if (this.matchLexem("@i", node, "if")) return true;
 
         this.erro("if");
         return false;
     }
 
     private for(node: TreeNode): boolean {
-        if (this.matchLexem("@f", node, "for"))
-            return true;
+        if (this.matchLexem("@f", node, "for")) return true;
 
         this.erro("for");
         return false;
     }
 
     private up(node: TreeNode): boolean {
-        if (this.matchLexem("up", node, "++"))
-            return true;
+        if (this.matchLexem("up", node, "++")) return true;
 
         this.erro("up");
         return false;
     }
 
+    private down(node: TreeNode): boolean {
+        if (this.matchLexem("down", node, "--")) return true;
+
+        this.erro("down");
+        return false;
+    }
+
     private from(node: TreeNode): boolean {
-        if (this.matchLexem("from", node, ""))
-            return true;
+        if (this.matchLexem("from", node, "getCondition(")) return true;
 
         this.erro("from");
         return false;
     }
 
     private to(node: TreeNode): boolean {
-        if (this.matchLexem("to", node))
-            return true;
+        if (this.matchLexem("to", node, ",")) return true;
 
         this.erro("to");
         return false;
@@ -766,8 +777,7 @@ export default class Parser {
     private END(node: TreeNode): boolean {
         const end = node.addNodeByName("END");
 
-        if (this.matchLexem("end", end, this.FOOTER) && this.matchLexem(";", end, ""))
-            return true;
+        if (this.matchLexem("end", end, this.FOOTER) && this.matchLexem(";", end, "")) return true;
 
         this.erro("end");
         return false;
@@ -778,7 +788,7 @@ export default class Parser {
         if (this.token?.tipo === type) {
             node.addNodeByName(this.token?.lexema);
             this.translate(newCode == undefined ? this.token.lexema : newCode);
-            
+
             this.token = this.getNextToken();
             return true;
         }
@@ -805,9 +815,8 @@ export default class Parser {
     }
 
     private createTranslatedFile(): void {
-        if (!fs.existsSync("./output"))
-            fs.mkdirSync("./output");
-        
+        if (!fs.existsSync("./output")) fs.mkdirSync("./output");
+
         fs.writeFileSync("./output/Main.java", this.finalCode);
     }
 }

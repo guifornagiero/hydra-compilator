@@ -1,5 +1,7 @@
 begin;
 
-@p(numn);
+@f (var <int> ii -> 10 | from ii to 0 | down ii) >-> {
+    @p(ii);
+}
 
 end;

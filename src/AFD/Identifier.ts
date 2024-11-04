@@ -17,7 +17,8 @@ export default class Identifier implements AFD {
             bool: "BOOLEAN",
             from: "FROM",
             to: "TO",
-            up: "UP"
+            up: "UP",
+            down: "DOWN",
         }
     }
 
