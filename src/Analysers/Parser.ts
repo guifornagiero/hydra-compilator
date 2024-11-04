@@ -781,6 +781,9 @@ export default class Parser {
     }
 
     private createTranslatedFile(): void {
-        fs.writeFileSync("output.txt", this.finalCode);
+        if (!fs.existsSync("./output"))
+            fs.mkdirSync("./output");
+        
+        fs.writeFileSync("./output/Main.java", this.finalCode);
     }
 }
