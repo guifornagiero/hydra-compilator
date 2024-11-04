@@ -5,27 +5,33 @@ export default class Semantic {
         this.variables = {};
     }
 
-    public declareVariable(name: string, type: string) {
+    public declareVariable(name: string, type: string, callback: Function)  {
         if (this.variables[name]) {
-            throw new Error(`Variável ${name} já declarada!`);
+            throw new Error(`Variável '${name}' já declarada!`);
         }
 
         this.variables[name] = type;
-        this.printVariables();
+        callback();
+    }
+
+    public redeclareVariable(name: string, callback: Function) {
+        if (!this.variables[name]) {
+            throw new Error(`Variável '${name}' não declarada!`);
+        }
+
+        callback();
     }
 
     public printVariables() {
         console.table(this.variables);
     }
 
-    public getRealType(type: string): string {
-        const types: Record<string, string> = {
-            int: "int",
-            string: "String",
-            bool: "boolean",
-            dec: "float",
-        };
+    public variableExists(name: string) {
+        if (!this.variables[name])
+            throw new Error(`Variável '${name}' não declarada!`);
+    }
 
-        return types[type];
+    public getVariables() {
+        return this.variables;
     }
 }
