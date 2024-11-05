@@ -1,11 +1,6 @@
 begin;
 
-@f (var <int> ii -> 10 | from ii to 0 | down ii) >-> {
-    @i (ii = 2) >-> {
-        @p(ii);
-    } @ei (ii = 6) >-> {
-        @p(ii);
-    }
-}
+var <string> bb -> (string)@r();
+@p(bb);
 
 end;

@@ -10,7 +10,8 @@ export default class Parser {
 
     private HEADER: string = `import java.util.Scanner; \npublic class Main { 
     public static boolean getCondition(int i, int limit) { if (i<limit) return i < limit; else return i > limit; }
-    public static void main(String[] args) {\n
+    public static void main(String[] args) {
+    Scanner scan = new Scanner(System.in); \n
     `;
     private FOOTER: string = "\n}\n}\n";
 
@@ -419,10 +420,26 @@ export default class Parser {
         return false;
     }
 
+    private TIPO2(node: TreeNode): boolean {
+        const tipo = node.addNodeByName("TIPO");
+
+        if (
+            this.matchType("INTEGER", tipo, "nextInt") ||
+            this.matchType("STRING", tipo, "nextLine") ||
+            this.matchType("DECIMAL", tipo, "nextFloat") ||
+            this.matchType("BOOLEAN", tipo, "nextBoolean")
+        ) {
+            return true;
+        }
+
+        this.erro("TIPO");
+        return false;
+    }
+
     private EXPRESSION(node: TreeNode): boolean {
         const expression = node.addNodeByName("EXPRESSION");
 
-        if (this.token?.tipo === "READ_FUNCTION") {
+        if (this.token?.lexema === "(") {
             if (this.READ_FUNCTION(expression)) {
                 return true;
             }
@@ -444,11 +461,14 @@ export default class Parser {
 
     private READ_FUNCTION(node: TreeNode): boolean {
         const readFunction = node.addNodeByName("READ_FUNCTION");
+        this.translate("scan.");
 
         if (
+            this.openPar(readFunction, "") &&
+            this.TIPO2(readFunction) &&
+            this.closePar(readFunction, "") &&
             this.read(readFunction) &&
             this.openPar(readFunction) &&
-            this.string(readFunction) &&
             this.closePar(readFunction)
         ) {
             return true;
@@ -618,7 +638,7 @@ export default class Parser {
     }
 
     private read(node: TreeNode): boolean {
-        if (this.matchLexem("@r", node)) return true;
+        if (this.matchLexem("@r", node, "")) return true;
 
         this.erro("read");
         return false;
@@ -692,15 +712,15 @@ export default class Parser {
         return false;
     }
 
-    private openPar(node: TreeNode): boolean {
-        if (this.matchLexem("(", node)) return true;
+    private openPar(node: TreeNode, newCode?: string): boolean {
+        if (this.matchLexem("(", node, newCode)) return true;
 
         this.erro("openPar");
         return false;
     }
 
-    private closePar(node: TreeNode): boolean {
-        if (this.matchLexem(")", node)) return true;
+    private closePar(node: TreeNode, newCode?: string): boolean {
+        if (this.matchLexem(")", node, newCode)) return true;
 
         this.erro("closePar");
         return false;
