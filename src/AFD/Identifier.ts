@@ -19,6 +19,9 @@ export default class Identifier implements AFD {
             to: "TO",
             up: "UP",
             down: "DOWN",
+            or: "OR",
+            and: "AND",
+            not: "NOT",
         }
     }
 

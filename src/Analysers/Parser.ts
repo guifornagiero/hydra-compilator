@@ -304,11 +304,35 @@ export default class Parser {
     private CONDICAO(node: TreeNode): boolean {
         const condicao = node.addNodeByName("CONDICAO");
 
-        if (this.E(condicao) && this.operadorRelacional(condicao) && this.E(condicao)) {
+        if (
+            this.E(condicao) &&
+            this.operadorRelacional(condicao) &&
+            this.E(condicao) &&
+            this.C(condicao)
+        ) {
             return true;
         }
 
         this.erro("CONDICAO");
+        return false;
+    }
+
+    private C(node: TreeNode): boolean {
+        const c = node.addNodeByName("C");
+
+        if (this.token?.lexema === "or") {
+            if (this.matchLexem("or", c, "||") && this.CONDICAO(c)) {
+                return true;
+            }
+        } else if (this.token?.lexema === "and") {
+            if (this.matchLexem("and", c, "&&") && this.CONDICAO(c)) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+        this.erro("C");
         return false;
     }
 
@@ -324,9 +348,9 @@ export default class Parser {
             this.id(forCondicao) &&
             this.declarationArrow(forCondicao) &&
             this.E(forCondicao) &&
-            this.or(forCondicao) &&
+            this.pipe(forCondicao) &&
             this.FROM_CONDITION(forCondicao) &&
-            this.or(forCondicao) &&
+            this.pipe(forCondicao) &&
             this.UP_OR_DOWN(forCondicao) &&
             this.id(forCondicao)
         ) {
@@ -574,10 +598,10 @@ export default class Parser {
         return false;
     }
 
-    private or(node: TreeNode): boolean {
+    private pipe(node: TreeNode): boolean {
         if (this.matchLexem("|", node, ";")) return true;
 
-        this.erro("or");
+        this.erro("pipe");
         return false;
     }
 
@@ -589,7 +613,8 @@ export default class Parser {
             this.matchLexem("<=", operadorRelacional) ||
             this.matchLexem("=", operadorRelacional, "==") ||
             this.matchLexem("<", operadorRelacional) ||
-            this.matchLexem(">", operadorRelacional)
+            this.matchLexem(">", operadorRelacional) ||
+            this.matchLexem("not", operadorRelacional, "!=")
         )
             return true;
 

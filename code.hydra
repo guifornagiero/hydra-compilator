@@ -1,9 +1,15 @@
 begin;
 
-@i (10 ? 5 = 0) >-> {
-    @p("Sim");
-} @e >-> {
-    @p("Não");
+@f (var <int> num -> 1 | from num to 15+1 | up num) >-> {
+    @i (num ? 3 = 0 and num ? 5 not 0) >-> {
+        @p("Fizz");
+    } @ei (num ? 3 not 0 and num ? 5 = 0) >-> {
+        @p("Buzz");
+    } @ei (num ? 3 = 0 and num ? 5 = 0) >-> {
+        @p("FizzBuzz");
+    } @e >-> {
+        @p(num);
+    }
 }
 
 end;
