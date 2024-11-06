@@ -4,7 +4,7 @@
   "description": "Compilador para a linguagem de programação Hydra, criada para a matéria de Compiladores da FEI",
   "main": "index.js",
   "scripts": {
-    "compile": "ts-node src/Compiler.ts"
+    "compile": "ts-node src/Compiler.ts && javac output/Main.java && cd output && java Main && cd .."
   },
   "keywords": [],
   "author": "",

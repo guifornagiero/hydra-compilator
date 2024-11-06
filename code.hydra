@@ -1,6 +1,13 @@
 begin;
 
-var <string> bb -> (string)@r();
-@p(bb);
+@p("Digite um número: ");
+var <int> num -> (int)@r();
+var <int> ii -> 0;
+
+@p("Saída: ");
+@w(ii < num) >-> {
+    @p(ii);
+    ii -> ii + 1;
+}
 
 end;
