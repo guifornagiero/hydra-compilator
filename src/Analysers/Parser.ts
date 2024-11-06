@@ -530,6 +530,10 @@ export default class Parser {
             if (this.matchLexem("/", t_) && this.F(t_) && this.T_(t_)) {
                 return true;
             }
+        } else if (this.token?.lexema === "?") {
+            if (this.matchLexem("?", t_, "%") && this.F(t_) && this.T_(t_)) {
+                return true;
+            }
         } else {
             return true;
         }

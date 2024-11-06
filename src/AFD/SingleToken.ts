@@ -47,6 +47,9 @@ export default class SingleToken implements AFD {
             case "&":
                 code.shift();
                 return new Token("AND", "&");
+            case "?":
+                code.shift();
+                return new Token("MODULE", "?");
             default:
                 return null;
         }

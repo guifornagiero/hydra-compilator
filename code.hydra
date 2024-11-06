@@ -1,13 +1,9 @@
 begin;
 
-@p("Digite um número: ");
-var <int> num -> (int)@r();
-var <int> ii -> 0;
-
-@p("Saída: ");
-@w(ii < num) >-> {
-    @p(ii);
-    ii -> ii + 1;
+@i (10 ? 5 = 0) >-> {
+    @p("Sim");
+} @e >-> {
+    @p("Não");
 }
 
 end;
