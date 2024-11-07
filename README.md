@@ -13,16 +13,16 @@ Compilador para a linguagem de programação Hydra, criada para a disciplina de 
 
 # Como programar em Hydra?
 ## Variáveis
-var <int> id -> 10;
-var <string> id -> "Hello";
-var <dec> id -> 3.14;
-var <bool> id -> true;
+var <int> id -> 10;<br>
+var <string> id -> "Hello";<br>
+var <dec> id -> 3.14;<br>
+var <bool> id -> true;<br><br>
 
 ## Condições (if, else if e else)
-@i (id = 10) >-> {
-  id -> 20;
-} @ei (id = 30) >-> {
-  id -> 40;
-} @e >-> {
-  id -> 50;
-}
+@i (id = 10) >-> {<br>
+  id -> 20;<br>
+} @ei (id = 30) >-> {<br>
+  id -> 40;<br>
+} @e >-> {<br>
+  id -> 50;<br>
+}<br><br>
