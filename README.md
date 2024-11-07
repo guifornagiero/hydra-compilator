@@ -12,9 +12,18 @@ Compilador para a linguagem de programação Hydra, criada para a disciplina de 
 8.	Você poderá consultar a saída no terminal. <br><br>
 
 # Como programar em Hydra?
+## Begin e end
+```
+begin;
+
+-- todo o código escrito --
+
+end;
+```
+
 ## Variáveis
 ```
--- comentário não será compilado --
+-- comentários não serão compilado --
 var <int> id -> 10;
 var <string> id -> "Hello";
 var <dec> id -> 3.14;
@@ -47,5 +56,10 @@ var <bool> id -> true;
 @f (var <int> num -> 10 | from num to 0 | down num) >-> {
   @p(num);
 }
+```
+
+## Jamal
+```
+jamal;
 ```
 
