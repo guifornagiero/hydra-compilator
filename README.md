@@ -23,7 +23,7 @@ end;
 
 ## Variáveis
 ```
--- comentários não serão compilado --
+-- comentários não serão compilados --
 var <int> id -> 10;
 var <string> id -> "Hello";
 var <dec> id -> 3.14;
