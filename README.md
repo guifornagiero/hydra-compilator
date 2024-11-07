@@ -19,6 +19,7 @@ var <dec> id -> 3.14;<br>
 var <bool> id -> true;<br><br>
 
 ## Condições (if, else if e else)
+```
 @i (id = 10) >-> {<br>
   id -> 20;<br>
 } @ei (id = 30) >-> {<br>
@@ -26,3 +27,5 @@ var <bool> id -> true;<br><br>
 } @e >-> {<br>
   id -> 50;<br>
 }<br><br>
+```
+
