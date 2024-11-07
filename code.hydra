@@ -1,15 +1,11 @@
 begin;
 
-@f (var <int> num -> 1 | from num to 15+1 | up num) >-> {
-    @i (num ? 3 = 0 and num ? 5 not 0) >-> {
-        @p("Fizz");
-    } @ei (num ? 3 not 0 and num ? 5 = 0) >-> {
-        @p("Buzz");
-    } @ei (num ? 3 = 0 and num ? 5 = 0) >-> {
-        @p("FizzBuzz");
-    } @e >-> {
-        @p(num);
-    }
+var <int> num -> 0;
+@w (num < 10) >-> {
+    @p(num);
+    num -> num + 1;
 }
+
+jamal;
 
 end;

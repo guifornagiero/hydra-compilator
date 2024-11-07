@@ -8,12 +8,22 @@ export default class Parser {
     private tokens: Token[];
     private token: Token | null;
 
-    private HEADER: string = `import java.util.Scanner; \npublic class Main { 
+    private HEADER: string = `import java.util.Scanner; import javax.swing.*; import java.awt.*;\npublic class Main { 
     public static boolean getCondition(int i, int limit) { if (i<limit) return i < limit; else return i > limit; }
     public static void main(String[] args) {
     Scanner scan = new Scanner(System.in); \n
     `;
     private FOOTER: string = "\n}\n}\n";
+
+    jamal: string = `JFrame frame = new JFrame("Jamal");\n
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);\n
+    String caminhoDaImagem = "../assets/jamal.jpg";\n
+    ImageIcon imagem = new ImageIcon(caminhoDaImagem);\n
+    JLabel label = new JLabel(imagem);\n
+    frame.add(label);\n
+    frame.pack();\n
+    frame.setLocationRelativeTo(null);\n
+    frame.setVisible(true);\n`;
 
     private semantic: Semantic;
     lastId: string = "";
@@ -97,11 +107,26 @@ export default class Parser {
             if (this.REDECLARACAO(bloco) && this.BLOCO(bloco)) {
                 return true;
             }
+        } else if (this.token?.tipo === "JAMAL") {
+            if (this.JAMAL(bloco) && this.BLOCO(bloco)) {
+                return true;
+            }
         } else {
             return true;
         }
 
         this.erro("BLOCO");
+        return false;
+    }
+
+    private JAMAL(node: TreeNode): boolean {
+        const jamal = node.addNodeByName("JAMAL");
+
+        if (this.matchLexem("jamal", jamal, this.jamal) && this.semi(jamal)) {
+            return true;
+        }
+
+        this.erro("JAMAL");
         return false;
     }
 
