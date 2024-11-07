@@ -13,19 +13,39 @@ Compilador para a linguagem de programação Hydra, criada para a disciplina de 
 
 # Como programar em Hydra?
 ## Variáveis
+```
+-- comentário não será compilado --
 var <int> id -> 10;<br>
 var <string> id -> "Hello";<br>
 var <dec> id -> 3.14;<br>
 var <bool> id -> true;<br><br>
+```
 
 ## Condições (if, else if e else)
 ```
-@i (id = 10) >-> {<br>
-  id -> 20;<br>
-} @ei (id = 30) >-> {<br>
-  id -> 40;<br>
-} @e >-> {<br>
-  id -> 50;<br>
-}<br><br>
+@i (id = 10 or id = 15) >-> { --if --
+  id -> 20;
+} @ei (id > 30 and id not 35) >-> { -- else if --
+  id -> 40;
+} @e >-> { -- else --
+  id -> 50;
+}
+```
+
+## Loopings (for e while)
+```
+-- while --
+@w (true) >-> {
+  @p("Hello world");
+}
+
+-- for --
+@f (var <int> num -> 0 | from num to 10 | up num) >-> {
+  @p(num);
+}
+
+@f (var <int> num -> 10 | from num to 0 | down num) >-> {
+  @p(num);
+}
 ```
 
