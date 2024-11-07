@@ -15,10 +15,10 @@ Compilador para a linguagem de programação Hydra, criada para a disciplina de 
 ## Variáveis
 ```
 -- comentário não será compilado --
-var <int> id -> 10;<br>
-var <string> id -> "Hello";<br>
-var <dec> id -> 3.14;<br>
-var <bool> id -> true;<br><br>
+var <int> id -> 10;
+var <string> id -> "Hello";
+var <dec> id -> 3.14;
+var <bool> id -> true;
 ```
 
 ## Condições (if, else if e else)
