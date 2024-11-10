@@ -58,6 +58,22 @@ var <bool> id -> true;
 }
 ```
 
+## Inputs e Outputs
+```
+-- read --
+var <int> num -> (int)@r();
+var <string> name -> (string)@r();
+var <dec> pi -> (dec)@r();
+var <bool> flag -> (bool)@r();
+
+-- print --
+@p("Output");
+@p(num);
+@p(name);
+@p(pi);
+@p(flag);
+```
+
 ## Jamal
 ```
 jamal;
