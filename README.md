@@ -76,6 +76,7 @@ var <bool> flag -> (bool)@r();
 
 ## Jamal
 ```
+-- só pode existir um jamal, antes do end; --
 jamal;
 ```
 
