@@ -3,10 +3,10 @@ Compilador para a linguagem de programação Hydra, criada para a disciplina de 
 Prof. Charles Ferreira
 
 ## Grupo
-GIANLUCA MARIANO SOBREIRO - 22.122.011-4<br>
-GUILHERME FORNAGIERO DE CARVALHO - 22.122.016-3<br>
-PAULO VINÍCIUS BESSA DE BRITO - 22.122.005-6<br>
-PEDRO AUGUSTO BENTO ROCHA - 22.122.028-8<br>
+Gianluca Mariano Sobreiro - 22.122.011-4<br>
+Guilherme Fornagiero de Carvalho - 22.122.016-3<br>
+Paulo Vinícius Bessa de Brito - 22.122.005-6<br>
+Pedro Augusto Bento Rocha - 22.122.028-8<br>
 
 
 # Como executar o compilador?
