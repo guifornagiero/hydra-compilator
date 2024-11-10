@@ -22,6 +22,7 @@ export default class Identifier implements AFD {
             or: "OR",
             and: "AND",
             not: "NOT",
+            jamal: "JAMAL"
         }
     }
 

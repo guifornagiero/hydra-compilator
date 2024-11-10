@@ -1,16 +1,11 @@
 begin;
 
-@p("Informe o valor  principal: ");
-var <dec> principal -> (dec)@r();
-@p("Informe a taxa de juros anual (em %): ");
-var <dec> taxaJuros -> (dec)@r();
-@p("Tempo em anos: ");
-var <dec> tempoAnos -> (dec)@r();
+var <int> num -> 0;
+@w (num < 10) >-> {
+    @p(num);
+    num -> num + 1;
+}
 
-taxaJuros -> taxaJuros / 100;
-
-var <dec> montante -> principal + (principal * taxaJuros * tempoAnos);
-
-@p(montante);
+jamal;
 
 end;
