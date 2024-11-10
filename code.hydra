@@ -1,15 +1,16 @@
 begin;
 
-@f (var <int> num -> 1 | from num to 15+1 | up num) >-> {
-    @i (num ? 3 = 0 and num ? 5 not 0) >-> {
-        @p("Fizz");
-    } @ei (num ? 3 not 0 and num ? 5 = 0) >-> {
-        @p("Buzz");
-    } @ei (num ? 3 = 0 and num ? 5 = 0) >-> {
-        @p("FizzBuzz");
-    } @e >-> {
-        @p(num);
-    }
-}
+@p("Informe o valor  principal: ");
+var <dec> principal -> (dec)@r();
+@p("Informe a taxa de juros anual (em %): ");
+var <dec> taxaJuros -> (dec)@r();
+@p("Tempo em anos: ");
+var <dec> tempoAnos -> (dec)@r();
+
+taxaJuros -> taxaJuros / 100;
+
+var <dec> montante -> principal + (principal * taxaJuros * tempoAnos);
+
+@p(montante);
 
 end;

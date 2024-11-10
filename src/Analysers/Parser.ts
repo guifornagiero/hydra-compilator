@@ -404,17 +404,20 @@ export default class Parser {
         const declaracao = node.addNodeByName("DECLARACAO");
         this.currentOperation = "DECLARACAO";
 
+        let preArrowId = "";
+
         if (
             this.var(declaracao) &&
             this.lessThen(declaracao) &&
             this.TIPO(declaracao) &&
             this.greaterThen(declaracao) &&
             this.id(declaracao) &&
+            (preArrowId = this.lastId) &&
             this.declarationArrow(declaracao) &&
             this.EXPRESSION(declaracao) &&
             this.semi(declaracao)
         ) {
-            this.semantic.declareVariable(this.lastId, this.lastType, () => {
+            this.semantic.declareVariable(preArrowId, this.lastType, () => {
                 this.lastId = "";
                 this.lastType = "";
             });
@@ -433,7 +436,7 @@ export default class Parser {
         if (
             this.matchType("INTEGER", tipo) ||
             this.matchType("STRING", tipo, "String") ||
-            this.matchType("DECIMAL", tipo, "float") ||
+            this.matchType("DECIMAL", tipo, "double") ||
             this.matchType("BOOLEAN", tipo, "boolean")
         ) {
             this.lastType = tipoName!;
@@ -450,7 +453,7 @@ export default class Parser {
         if (
             this.matchType("INTEGER", tipo, "nextInt") ||
             this.matchType("STRING", tipo, "nextLine") ||
-            this.matchType("DECIMAL", tipo, "nextFloat") ||
+            this.matchType("DECIMAL", tipo, "nextDouble") ||
             this.matchType("BOOLEAN", tipo, "nextBoolean")
         ) {
             return true;
