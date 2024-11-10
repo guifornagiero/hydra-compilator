@@ -9,8 +9,7 @@ Paulo Vinícius Bessa de Brito - 22.122.005-6<br>
 Pedro Augusto Bento Rocha - 22.122.028-8<br>
 
 ## Documentação
-[Documentação - Hydra Lang.pdf](https://github.com/user-attachments/files/17692345/Documentacao.-.Hydra.Lang.pdf)
-
+[Documentação - Hydra Lang.pdf](https://github.com/user-attachments/files/17692346/Documentacao.-.Hydra.Lang.pdf)
 
 # Como executar o compilador?
 1.	Clone o repositório @guifornagiero/hydra-compilator do GitHub <br>
