@@ -108,7 +108,7 @@ export default class Parser {
                 return true;
             }
         } else if (this.token?.tipo === "JAMAL") {
-            if (this.JAMAL(bloco) && this.BLOCO(bloco)) {
+            if (this.JAMAL(bloco)) {
                 return true;
             }
         } else {
